@@ -1,0 +1,142 @@
+#cheat-sheet {
+  background: #000;
+  @include border-radius(5px);
+  color: #fff;
+  font-weight: 700;
+  width: 100%;
+
+  li {
+    border-bottom: 1px solid #fff;
+    line-height: $icon_width/2;
+    padding: 0 0 0 ($icon_width/2 + 10);
+    position: relative;
+
+    &:last-child { border-bottom: none }
+
+    .icon {
+      border-right: 1px solid #fff;
+      color: #fff;
+      display: inline-block;
+      font-size: larger;
+      font-weight: 700;
+      position: absolute; top: 0; bottom: 0; left: 0;
+      text-align: center;
+      height: $icon_width;
+      width: $icon_width;
+      @include hide-text();
+      @include transform(scale(0.5));
+      -webkit-transform-origin: top left;
+      -moz-transform-origin: top left;
+      -ms-transform-origin: top left;
+      -o-transform-origin: top left;
+      transform-origin: top left;
+
+      &.kaleid-mode { @include icons-sprite(mirrors-dark) }
+      &.effects-mode { @include icons-sprite(pixelate-dark) }
+      &.bleed-mode { @include icons-sprite(bleed-dark) }
+      &.color-theme { @include icons-sprite(themes-dark) }
+      &.edit-mode { @include icons-sprite(edit-dark) }
+      &.hide-menu { @include icons-sprite(hide-dark) }
+      &.intro { @include icons-sprite(intro-dark) }
+    }
+  }
+}
+
+#footer {
+  clear: both;
+
+  p {
+    color: #7f7f7f;
+    font-size: small;
+    margin: 0 }
+}
+
+#header {
+  border-bottom: 1px solid #666;
+  margin-bottom: 20px;
+  overflow: hidden;
+
+  h1 {
+    font-size: 1.5em;
+    line-height: 1em;
+    margin: 0;
+
+    a { font-size: large }
+  }
+
+  img {
+    display: block;
+    margin: 20px auto }
+}
+
+#home {
+  background: #555 image-url('background.jpg') repeat top left;
+
+  &.about   #main .content.about,
+  &.help    #main .content.help,
+  &.credits #main .content.credits { display: block }
+
+  .wrapper {
+    margin: 0 auto;
+    padding: 15px;
+    width: 100%;
+
+    @media screen and (min-width: $break-big) {
+      width: 100% }
+  }
+}
+
+#main {
+  margin-bottom: 40px;
+
+  @media screen and (min-width: $break-big) {
+    overflow: hidden }
+
+  .content {
+    display: none;
+    font-size: small;
+    line-height: 1.5em;
+    min-height: 350px;
+
+    @media screen and (min-width: $break-big) {
+      display: inline-block;
+      float: left;
+      padding: 0 25px 0 0;
+      width: 1/3 * 100% }
+
+    &.credits span { color: #fff }
+
+    ul {
+      @include no-bullets();
+      margin: 1em 0;
+      padding: 0 }
+  }
+}
+
+#nav {
+  font-size: large;
+  font-weight: 700;
+  @include horizontal-list(3px);
+
+  li {
+    color: #fff;
+    cursor: pointer;
+
+    &.active { color: #000 }
+
+    @media screen and (min-width: $break-big) {
+      float: left;
+      padding: 0 20px 0 0;
+      width: 1/3 * 100%;
+      color: #000 }
+  }
+}
+
+#start {
+  color: #fff;
+  display: inline-block;
+  float: right;
+  font-size: large;
+  font-weight: 700;
+  margin: 0 0 20px;
+  text-align: right }

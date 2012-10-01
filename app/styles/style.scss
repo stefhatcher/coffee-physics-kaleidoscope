@@ -1,0 +1,46 @@
+@import "compass";
+@import "compass/css3/user-interface";
+
+$legacy-support-for-ie6:             false;
+$legacy-support-for-ie7:             true;
+$legacy-support-for-ie8:             true;
+$experimental-support-for-webkit:    true;
+$experimental-support-for-microsoft: true;
+$experimental-support-for-mozilla:   true;
+$experimental-support-for-opera:     true;
+$experimental-support-for-khtml:     false;
+$experimental-support-for-svg: true;
+
+$break-big: 768px;
+$break-bigger: 900px;
+$break-small: 360px;
+
+$icon_width: 80px;
+
+@import "icons/*.png";
+
+* { @include box-sizing(border-box) }
+
+a, a:hover, a:visited, a:focus {
+  color: #fff;
+  text-decoration: none }
+
+html {
+  overflow: auto }
+
+html,body {
+  min-height: 100%;
+  height: auto;
+  width: 100%;
+  margin:0;
+  padding:0;
+  position: relative }
+
+body {
+  color: #000;
+  font-family: Helvetica, Arial, Sans-Serif;
+  font-size: 100%;
+  -webkit-font-smoothing: antialiased }
+
+  @import "intro";
+  @import "app";
