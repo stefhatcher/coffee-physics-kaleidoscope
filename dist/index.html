@@ -29,7 +29,7 @@
     <meta property="og:title" content="Kaleidoscope Mobile Experiment">
     <meta property="og:site_name" content="Kaleidoscope by Instrument">
     <meta property="og:image" content="http://stefhatcher.com/images/stefaniewithaf.png">
-    <meta property="description" content="Kaleidoscope is an interactive visual toy which uses the accelerometer of your handheld device to control the output on the screen. Add shapes. Select a color scheme. Abstract it. Have fun!">
+    <meta property="description" content="Kaleidoscope is an interactive visual toy which uses touch on your handheld device to control the output on the screen. Add shapes. Select a color scheme. Abstract it. Have fun!">
 
     <link rel="shortcut icon" href="favicon.ico">
     <link rel="apple-touch-icon-precomposed" sizes="144x144" href="apple-touch-icon-144x144-precomposed.png">
@@ -63,9 +63,8 @@
 
         <div class="about content">
           <p>
-            Kaleidoscope is an interactive visual toy which uses the
-            accelerometer of your handheld device to control the output
-            on the screen.
+            Kaleidoscope is an interactive visual toy which uses touch
+            on your handheld device to control the output on the screen.
           </p>
 
           <p>Add shapes. Select a color scheme. Abstract it. Have fun!</p>
@@ -74,42 +73,55 @@
         <div class="help content">
           <p>Here's a cheat sheet for the top level of controls.</p>
 
-          <ul id="cheat-sheet">
-            <li>
-              <span class="kaleid-mode icon"></span>
-              Toggle Kaleidoscope
-            </li>
-            <li>
-              <span class="effects-mode icon"></span>
-              Toggle Pixelate
-            </li>
-            <li>
-              <span class="bleed-mode icon"></span>
-              Toggle Bleed Mode
-            </li>
-            <li>
-              <span class="color-theme icon"></span>
-              Color Themes
-            </li>
-            <li>
-              <span class="edit-mode icon"></span>
-              Edit (Pause &amp; Add Shapes)
-            </li>
-            <li>
+          <dl id="cheat-sheet">
+            <dt>Mirrors</dt>
+            <dd>
+              <span class="kaleidoscope icon"></span>
+              Turn the kaleidoscope mirrors on/off. Off by default.
+            </dd>
+
+            <dt>Pixelate</dt>
+            <dd>
+              <span class="pixelate icon"></span>
+              Adds a semi-transparent, pixelated layer of the kaleidoscope.
+            </dd>
+
+            <dt>Bleed</dt>
+            <dd>
+              <span class="bleed icon"></span>
+              Let the colors bleed! Shapes will leave fun trails!
+            </dd>
+
+            <dt>Color Themes</dt>
+            <dd>
+              <span class="color-themes icon"></span>
+              Change the color theme. Theme 0 by default. Overlap themes when Bleed is enabled!
+            </dd>
+
+            <dt>Shapes</dt>
+            <dd>
+              <span class="edit icon"></span>
+              Pauses the kaleidoscope. Opens a drawer of shapes to add. Comes complete with a mystery "?" shape!
+            </dd>
+
+            <dt>Minimize</dt>
+            <dd>
               <span class="hide-menu icon"></span>
-              Hide Menu
-            </li>
-            <li>
-              <span class="intro icon"></span>
-              Back to About
-            </li>
-          </ul>
+              Minimize the menu.
+            </dd>
+
+            <dt>Back</dt>
+            <dd>
+              <span class="back-to-intro icon"></span>
+              Back to the kaleidoscope home.
+            </dd>
+          </dl>
         </div>
 
         <div class="credits content">
           <ul>
-            <li><span>Design:</span> Dan Schechter</li>
-            <li><span>Development:</span> Stefanie Hatcher</li>
+            <li><span>Designer:</span> Dan Schechter</li>
+            <li><span>Developer:</span> Stefanie Hatcher</li>
             <li><span>Producer:</span> Amie Pascal</li>
           </ul>
         </div>

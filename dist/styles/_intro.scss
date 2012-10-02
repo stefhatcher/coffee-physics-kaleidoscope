@@ -1,44 +1,38 @@
 #cheat-sheet {
   background: #000;
-  @include border-radius(5px);
+  @include border-radius(2px);
   color: #fff;
-  font-weight: 700;
-  width: 100%;
+  padding: 10px;
 
-  li {
+  dt {
     border-bottom: 1px solid #fff;
-    line-height: $icon_width/2;
-    padding: 0 0 0 ($icon_width/2 + 10);
+    font-size: larger;
+    font-weight: 700;
+    padding: 0 0 5px;
+  }
+
+  dd {
+    color: #7f7f7f;
+    margin: 5px 0 20px;
+    min-height: 50px;
+    padding: 0 0 0 60px;
     position: relative;
+  }
 
-    &:last-child { border-bottom: none }
+  .icon {
+    position: absolute;
+    top: -20px; left: -15px;
+    height: 80px;
+    width: 80px;
+    @include transform(scale(0.5));
 
-    .icon {
-      border-right: 1px solid #fff;
-      color: #fff;
-      display: inline-block;
-      font-size: larger;
-      font-weight: 700;
-      position: absolute; top: 0; bottom: 0; left: 0;
-      text-align: center;
-      height: $icon_width;
-      width: $icon_width;
-      @include hide-text();
-      @include transform(scale(0.5));
-      -webkit-transform-origin: top left;
-      -moz-transform-origin: top left;
-      -ms-transform-origin: top left;
-      -o-transform-origin: top left;
-      transform-origin: top left;
-
-      &.kaleid-mode { @include icons-sprite(mirrors-dark) }
-      &.effects-mode { @include icons-sprite(pixelate-dark) }
-      &.bleed-mode { @include icons-sprite(bleed-dark) }
-      &.color-theme { @include icons-sprite(themes-dark) }
-      &.edit-mode { @include icons-sprite(edit-dark) }
-      &.hide-menu { @include icons-sprite(hide-dark) }
-      &.intro { @include icons-sprite(intro-dark) }
-    }
+    &.kaleidoscope { @include icons-sprite(mirrors-dark) }
+    &.pixelate { @include icons-sprite(pixelate-dark) }
+    &.bleed { @include icons-sprite(bleed-dark) }
+    &.color-themes { @include icons-sprite(themes-dark) }
+    &.edit { @include icons-sprite(edit-dark) }
+    &.hide-menu { @include icons-sprite(hide-dark) }
+    &.back-to-intro { @include icons-sprite(intro-dark) }
   }
 }
 
