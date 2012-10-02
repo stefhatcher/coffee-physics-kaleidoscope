@@ -2,9 +2,9 @@ body.kaleidoscope {
   background: #f9f9de;
   overflow: hidden }
 
-#clear-all {
+#destroy-all {
   cursor: pointer;
-  display: none;
+  display: block;
   position: absolute; top: 5px; right: 5px;
   width: $icon_width;
   height: $icon_width;
@@ -17,6 +17,32 @@ body.kaleidoscope {
   -ms-transform-origin: top right;
   -o-transform-origin: top right;
   transform-origin: top right }
+
+#pause {
+  &:after {
+    content: '▶';
+  }
+
+  @include border-radius(5px);
+  display: block;
+  position: absolute; bottom: 5px; right: 5px;
+  background: #000;
+  color: #fff;
+  z-index: 100000;
+  height: 40px;
+  width: 40px;
+  text-align: center;
+  line-height: 40px;
+
+  &.active {
+    background: #fff;
+    color: #000;
+
+    &:after {
+      content: '▶';
+    }
+  }
+}
 
 #color-themes {
   background: #fff;
