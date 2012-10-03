@@ -32,7 +32,7 @@ controls = (function() {
   }
 
   controls.prototype.init = function(kaleid) {
-    this.oscope = kaleid;
+    this.world = kaleid;
     this.update = __bind(this.update, this);
     this.playing = true;
     this.update();
@@ -47,8 +47,8 @@ controls = (function() {
       'colors': this.toggleThemes,
       'edit': this.toggleEdit,
       'hide': this.toggleMenu,
-      'pause': this.togglePause,
-      'destroy-all': this.destoryAll
+      'animate': this.togglePause,
+      'destroy-all': this.resetAll
     };
 
     var item, startEvent = (Modernizr && Modernizr.touch) ? 'touchend' : 'mouseup';
@@ -63,56 +63,63 @@ controls = (function() {
     this.toggleEdit();
 
     $('li.shape').bind(startEvent, __bind(this.addShape, this));
-    $(this.oscope.container).bind(startEvent, __bind(this.step, this));
+    $(this.world.container).bind(startEvent, __bind(this.step, this));
   }
 
-  controls.prototype.destoryAll = function(e) {
+  controls.prototype.resetAll = function(e) {
+     if (confirm("Clear all of the things?")) {
+      $('#pixel-img').remove();
 
-  };
-
-  controls.prototype.togglePause = function(e) {
-    if (!this.playing) {
-      this.play();
-      this.items['edit'].removeClass('open')
-    } else {
       this.pause();
+      this.items['edit'].addClass('open');
+
+      this.world.physics.destroy();
+      this.world.physics = null;
+      this.world.view.reset();
+
+      this.world.setup();
     }
   };
 
+  controls.prototype.togglePause = function(e) {
+    return (!this.playing) ? this.play() : this.pause();
+  };
+
   controls.prototype.pause = function(e) {
-    this.items['pause'].removeClass('active');
+    this.items['animate'].removeClass('active');
     this.playing = false;
   };
 
   controls.prototype.play = function() {
-    this.items['pause'].addClass('active');
+    this.items['animate'].addClass('active');
+    this.items['edit'].removeClass('open');
     this.playing = true;
   };
 
   controls.prototype.step = function(e) {
     if (!this.playing) {
-      this.oscope.step();
-      this.oscope.view.render(this.oscope.physics);
+      this.world.step();
+      this.world.view.render(this.world.physics);
     }
   };
 
   controls.prototype.update = function(time) {
     requestAnimationFrame(this.update);
 
-    if (this.playing && this.oscope) {
-      this.oscope.step();
+    if (this.playing && this.world) {
+      this.world.step();
       this.removeSpring(time);
     }
   };
 
   controls.prototype.removeSpring = function(time) {
     if (time % 500 === 0) {
-      var index = ~~Random(1, this.oscope.physics.springs.length - 1),
-      removed = this.oscope.physics.springs[index];
+      var index = ~~Random(1, this.world.physics.springs.length - 1),
+      removed = this.world.physics.springs[index];
 
       if (removed) {
         removed.p2.behaviours.push(new Attraction(removed.p1.pos, 500, -2000));
-        this.oscope.physics.springs.splice(index, 1);
+        this.world.physics.springs.splice(index, 1);
       }
     }
   };
@@ -120,17 +127,17 @@ controls = (function() {
   // shape controls
   controls.prototype.addShape = function(e) {
     e.stopPropagation();
-    this.oscope.addShape($(e.target).parent().attr('id'));
+    this.world.addShape($(e.target).parent().attr('id'));
   };
 
   // color controls
   controls.prototype.setupColors = function() {
     var startEvent = (Modernizr && Modernizr.touch) ? 'touchend' : 'mouseup',
-        size = this.oscope.THEMES.length,
-        themeh = this.oscope.width/(size * 4), theme, li;
+        size = this.world.THEMES.length,
+        themeh = this.world.width/(size * 4), theme, li;
 
-    for (var i = 0, _len = this.oscope.THEMES.length; i < _len; i++) {
-      theme = this.oscope.THEMES[i];
+    for (var i = 0, _len = this.world.THEMES.length; i < _len; i++) {
+      theme = this.world.THEMES[i];
       li = $('<li>').attr('id', i + '_theme');
       li.append($('<h2>').text(i));
 
@@ -144,19 +151,19 @@ controls = (function() {
   };
 
   controls.prototype.selectTheme = function(e) {
-    e.stopPropagation();
+    e && e.stopPropagation();
 
-    this.oscope.setTheme(($(e.target).parent().attr('id')));
+    this.world.setTheme(($(e.target).parent().attr('id')));
     this.toggleThemes();
   };
-
 
   // state controls
   controls.prototype.toggleBleed = function(e) {
     e && e.stopPropagation();
     
-    this.oscope.view.bleed = !this.oscope.view.bleed;
+    this.world.view.bleed = !this.world.view.bleed;
     this.items['bleed'].toggleClass('active');
+    !this.playing && this.world.view.render(this.world.physics);
   };
 
   controls.prototype.toggleEdit = function(e) {
@@ -182,24 +189,24 @@ controls = (function() {
                       .parent().toggleClass('collapsed');
 
     this.items['destroy-all'].toggle();
-    this.items['pause'].toggleClass('minimized');
+    this.items['animate'].toggleClass('minimized');
   };
 
   controls.prototype.toggleMirrors = function(e) {
     e && e.stopPropagation();
 
     this.items['kaleidoscope'].toggleClass('active');
-    this.oscope.view.reflect = !this.oscope.view.reflect;
+    this.world.view.reflect = !this.world.view.reflect;
 
-    if (!this.oscope.view.reflect) {
-      $(this.oscope.view.canvas).fadeIn('fast');
-      $(this.oscope.view.mirrors).fadeOut('fast');
-      this.oscope.view.mctx.clearRect(0, 0, this.oscope.width, this.oscope.height);
+    if (!this.world.view.reflect) {
+      $(this.world.view.canvas).fadeIn('fast');
+      $(this.world.view.mirrors).fadeOut('fast');
+      this.world.view.mctx.clearRect(0, 0, this.world.width, this.world.height);
     } else {
-      $(this.oscope.view.canvas).fadeOut('fast');
-      $(this.oscope.view.mirrors).fadeIn('fast');
+      $(this.world.view.canvas).fadeOut('fast');
+      $(this.world.view.mirrors).fadeIn('fast');
 
-      !this.playing && this.oscope.view.render(this.oscope.physics);
+      !this.playing && this.world.view.render(this.world.physics);
     }
   };
 
@@ -212,10 +219,11 @@ controls = (function() {
       $('#pixel-img').remove();
       this.items['pixelate'].addClass('active');
 
-      if (this.oscope.view.reflect) {
-        data = this.oscope.view.mirrors.toDataURL('png/image');
+      // pixelate the currently visible world
+      if (this.world.view.reflect) {
+        data = this.world.view.mirrors.toDataURL('png/image');
       } else {
-        data = this.oscope.view.canvas.toDataURL('png/image');
+        data = this.world.view.canvas.toDataURL('png/image');
       }
       
       var obj = this,
@@ -237,7 +245,7 @@ controls = (function() {
 
       }, false);
     
-      this.oscope.container.appendChild(img);
+      this.world.container.appendChild(img);
       this.pixelate = false;  
     }
   };
@@ -257,4 +265,4 @@ var kaleidoscope = new kaleid();
     kaleidoscope.init(document.getElementById('viewport'), new view());
 var controllers = new controls();
     controllers.init(kaleidoscope);
-    controllers.oscope.addShape('circle');
+    controllers.world.addShape('circle');

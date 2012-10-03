@@ -1,5 +1,5 @@
 body.kaleidoscope {
-  background: #f9f9de;
+  background: rgba(#f9f9de, 0.75);
   overflow: hidden }
 
 #destroy-all {
@@ -18,7 +18,7 @@ body.kaleidoscope {
   -o-transform-origin: top right;
   transform-origin: top right }
 
-#pause {
+#animate {
   &:after {
     content: '▶';
   }

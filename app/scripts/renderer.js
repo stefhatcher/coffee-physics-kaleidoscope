@@ -26,14 +26,18 @@ view = (function() {
     this.reflect = false;
     this.xo = 0;
     this.yo = 0;
+    this.landscape = 0;
   }
-
-  view.prototype.toRadian = function(deg) {
-    return deg * this.PI_RAD;
-  };
 
   view.prototype.init = function(physics) {
     return this.initialized = true;
+  };
+
+  view.prototype.reset = function() {
+    this.ctx.clearRect(0, 0, this.width, this.height);
+    this.mctx.clearRect(0, 0, this.width, this.height);
+    this.octx.clearRect(0, 0, this.width, this.height);
+    return this.initialized = false;
   };
 
   view.prototype.render = function(physics) {
@@ -59,24 +63,26 @@ view = (function() {
 
         this.ctx.fillStyle = p.colour || '#FFFFFF';
         this.ctx.beginPath();
-// this.ctx.arc(p.pos.x, p.pos.y, p.radius, 0, TWO_PI, false);
-        if (p.shape === 'pentagon') {
 
+        if (p.shape === 'pentagon') {
+          this.ctx.moveTo(p.pos.x, p.pos.y - p.radius);
+          this.ctx.lineTo(p.pos.x - p.radius, p.pos.y);
+          this.ctx.lineTo(p.pos.x + -p.radius * 0.5, p.pos.y + p.radius * (Math.sqrt(3) / 2));
+          this.ctx.lineTo(p.pos.x + p.radius * 0.5, p.pos.y + p.radius * (Math.sqrt(3) / 2));
+          this.ctx.lineTo(p.pos.x + p.radius, p.pos.y);
+          this.ctx.lineTo(p.pos.x, p.pos.y - p.radius);
         } else if (p.shape === 'square') {
           this.ctx.fillRect(p.pos.x - p.radius, p.pos.y - p.radius, p.radius * 2, p.radius * 2);
         } else if (p.shape === 'special') {
-          // left ear
           this.ctx.moveTo(p.pos.x - p.radius, p.pos.y);
           this.ctx.lineTo(p.pos.x - p.radius, p.pos.y - p.radius * 1.5);
           this.ctx.lineTo(p.pos.x, p.pos.y);
           this.ctx.arc(p.pos.x, p.pos.y, p.radius, 0, TWO_PI, false);
-
-          // right ear
+          
           this.ctx.moveTo(p.pos.x + p.radius, p.pos.y);
           this.ctx.lineTo(p.pos.x + p.radius, p.pos.y - p.radius * 1.5);
           this.ctx.lineTo(p.pos.x, p.pos.y);
           this.ctx.arc(p.pos.x, p.pos.y, p.radius, 0, TWO_PI, false);
-
         } else if (p.shape === 'triangle') {
           var side = ~~(p.radius * (6 / Math.sqrt(3)));
           this.ctx.moveTo(p.pos.x, p.pos.y - p.radius);
@@ -92,7 +98,7 @@ view = (function() {
     }
 
     if (this.renderSprings) {
-      this.ctx.strokeStyle = 'rgba(249, 249, 222, 0.2)';
+      this.ctx.strokeStyle = 'rgba(249, 249, 222, 0.1)';
       this.ctx.beginPath();
 
       sprs = physics.springs;
@@ -116,20 +122,49 @@ view = (function() {
       this.mctx.fillStyle = '#f9f9de';
 
       this.octx.save();
-      this.octx.translate(this.xo, this.yo);
-      this.octx.rotate(90 * PI_RAD);
-      this.octx.scale(-1, 1);
+      this.octx.beginPath();
+      this.octx.moveTo(0, 0);
+      this.octx.lineTo(this.xo, this.yo);
+      this.octx.lineTo(0, this.yo);
+      this.octx.lineTo(0, 0);
+      this.octx.closePath();
+      this.octx.clip();
       this.octx.drawImage(this.canvas, 0, 0);
       this.octx.restore();
 
       this.octx.save();
+      this.octx.globalCompositeOperation = 'destination-over';
       this.octx.translate(this.xo, this.yo);
       this.octx.scale(-1, 1);
+      this.octx.rotate((180 * PI_RAD) - (Math.atan(this.yo/this.xo) * 2));
       this.octx.drawImage(this.offscreen, -this.xo, -this.yo);
+      this.octx.scale(-1, 1);
+      this.octx.drawImage(this.offscreen, this.xo, -this.yo);
+      this.octx.restore();
+
+      if (this.landscape === 90) {
+        this.octx.save();
+        this.octx.globalCompositeOperation = 'destination-over';
+        this.octx.translate(this.xo, this.yo);
+        this.octx.scale(-1, 1);
+        this.octx.rotate((135 * PI_RAD) - (Math.atan(this.yo/this.xo)) * 2.4);
+        this.octx.drawImage(this.offscreen, -this.xo, -this.yo);
+        this.octx.scale(-1, 1);
+        this.octx.drawImage(this.offscreen, this.xo, -this.yo);
+        this.octx.restore();    
+      }  
+
+      this.octx.clearRect(this.xo, 0, this.xo, this.height);
+      this.octx.clearRect(0, this.yo, this.width, this.yo);
+
+      this.octx.save();
+      this.octx.translate(this.xo, this.yo);
       this.octx.scale(-1, -1);
       this.octx.drawImage(this.offscreen, -this.xo, -this.yo);
+      this.octx.scale(-1, 1);
+      this.octx.drawImage(this.offscreen, -this.xo, -this.yo);
       this.octx.restore();
-      
+
       this.mctx.fillRect(0, 0, this.width, this.height);
       this.mctx.drawImage(this.offscreen, 0, 0);
     }
@@ -137,11 +172,15 @@ view = (function() {
     return this.renderTime = new Date().getTime() - startTime;
   };
 
-  view.prototype.setSize = function(width, height) {
+  view.prototype.setSize = function(width, height, landscape) {
+    this.landscape = landscape ||
+                     Math.abs(window.orientation) ||
+                     (width > height) ? 90 : 0;
+
     this.width = width;
     this.height = height;
-    this.xo = ~~(this.width / 2);
-    this.yo = ~~(this.height / 2);
+    this.xo = this.width / 2;
+    this.yo = this.height / 2;
     this.canvas.width = this.width;
     this.canvas.height = this.height;
     this.mirrors.width = this.width;
@@ -153,5 +192,5 @@ view = (function() {
   return view;
 })();
 
-// ========= END KALEID CANVAS OBJ =========
+// ========= END KALEID RENDERER =========
 

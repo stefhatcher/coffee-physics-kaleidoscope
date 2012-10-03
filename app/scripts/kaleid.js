@@ -4,33 +4,34 @@ var kaleid = {},
 kaleid = (function() {
 
   function kaleid() {
-    this.DPR = window.devicePixelRatio;
     this.COLORS = COLOR_THEMES[0];
     this.THEMES = COLOR_THEMES;
     this.height = window.innerHeight;
     this.width = window.innerWidth;
+    this.resize = __bind(this.resize, this);
+    this.mousemove = __bind(this.mousemove, this);
+  }
+
+  kaleid.prototype.setup = function() {
+    this.renderTime = 0;
+    this.counter = 0;
+
     this.physics = new Physics();
     this.mouse = new Particle();
     this.mouse.fixed = true;
     this.mouse.pos.set(this.width/2, this.height/2);
     this.physics.particles.push(this.mouse);
-    this.renderTime = 0;
-    this.counter = 0;
-    this.resize = __bind(this.resize, this);
-    this.mousemove = __bind(this.mousemove, this);
-  }
 
-  kaleid.prototype.setup = function(full) {
-    var wall1, wall2, squared = Math.max(this.width, this.height);
-    full = (full !== null) ? full : false;
-
-    this.max = full ? 400 : 200;
+    this.max = 400;
     this.physics.integrator = new ImprovedEuler();
     this.center = new Attraction(this.mouse.pos, 500, 1200);
 
-    wall1 = new Vector(0, 0);
-    wall2 = new Vector(squared, squared);
-    this.edge = new EdgeBounce(wall1, wall2);
+    this.edge = new EdgeBounce(
+                  new Vector(0, 0),
+                  new Vector(this.width, this.height));
+
+    this.view.mouse = this.mouse;
+    this.view.init(this.physics);
   };
 
 
@@ -49,8 +50,6 @@ kaleid = (function() {
 
     this.container.appendChild(this.view.domElement);
     this.container.appendChild(this.view.mirrors);
-    this.view.mouse = this.mouse;
-    this.view.init(this.physics);
 
     return this.resize();
   };
@@ -58,9 +57,9 @@ kaleid = (function() {
   kaleid.prototype.addShape = function(type) {
     var max = ~~Random(3, 10), size = this.physics.particles.length, i, i_, p, s;
 
-    if (size + max > 300) {
-      this.physics.particles.splice(1, (size + max) - 300);
-      this.physics.springs.splice(1, (size + max) - 300);
+    if (size + max > this.max) {
+      this.physics.particles.splice(1, (size + max) - this.max);
+      this.physics.springs.splice(1, (size + max) - this.max);
     }
 
     for (i = _i = 0; 0 <= max ? _i <= max : _i >= max; i = 0 <= max ? ++_i : --_i) {
