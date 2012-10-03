@@ -1,0 +1,260 @@
+body.kaleidoscope {
+  background: #f9f9de;
+  overflow: hidden }
+
+#destroy-all {
+  cursor: pointer;
+  display: block;
+  position: absolute; top: 5px; right: 5px;
+  width: $icon_width;
+  height: $icon_width;
+  @include hide-text();
+  @include icons-sprite(trash-dark);
+  z-index: 10000;
+  @include transform(scale(0.5));
+  -webkit-transform-origin: top right;
+  -moz-transform-origin: top right;
+  -ms-transform-origin: top right;
+  -o-transform-origin: top right;
+  transform-origin: top right }
+
+#pause {
+  &:after {
+    content: '▶';
+  }
+
+  @include border-radius(5px);
+  display: block;
+  position: absolute; bottom: 235px; left: 5px;
+  background: #fff;
+  color: #000;
+  z-index: 100000;
+  height: 40px;
+  width: 40px;
+  text-align: center;
+  line-height: 45px;
+
+  &.active {
+    background: #000;
+    color: #fff }
+
+  &.minimized {
+    opacity: 0.1;
+    bottom: 75px;
+    left: -5px; }
+}
+
+#color-themes {
+  background: #fff;
+  @include horizontal-list(0);
+  position: absolute;
+  top: 0;
+  z-index: 100000;
+  left: 0;
+  right: 0;
+
+  li {
+    width: 20%;
+
+    h2 {
+      background: #000;
+      color: #fff;
+      font-weight: 400;
+      margin: 0;
+      padding: 0.25em 0;
+      text-align: center }
+
+    span {
+      display: inline-block;
+      float: left;
+      height: 2.75em;
+      width: 25% }
+  }
+}
+
+#modes {
+  @include user-select(none);
+  display: block;
+  font-size: 2em;
+  font-weight: 700;
+  @include no-bullets();
+  margin: 0;
+  opacity: 1;
+  padding: 0;
+  position: absolute;
+  left: 5px; bottom: 5px;
+  text-align: center;
+  z-index: 10000;
+  @include transform(scale(0.5));
+  -webkit-transform-origin: bottom left;
+  -moz-transform-origin: bottom left;
+  -ms-transform-origin: bottom left;
+  -o-transform-origin: bottom left;
+  transform-origin: bottom left;
+
+  &.collapsed {
+    left: -5px;
+    bottom: 30px; }
+
+  li {
+    height: $icon_width;
+    line-height: $icon_width;
+    overflow: hidden;
+    width: $icon_width;
+
+    &.open { width: 400% }
+    &:first-child { @include border-radius(10px 10px 0 0) }
+    &:last-child { @include border-radius(0 0 10px 10px) }
+
+    > .icon { border-top: 1px solid #fff }
+    > .icon:first-child { border-top: none }
+
+    .icon {
+      background-color: #000 !important;
+      cursor: pointer;
+      display: block;
+      @include hide-text();
+      width: $icon_width;
+
+      &.top {
+        display: inline-block;
+        float: left }
+    }
+
+    &.active .icon { background-color: #fff !important }
+
+    &#kaleidoscope {
+      .icon { @include icons-sprite(mirrors-dark) }
+      &.active .icon { @include icons-sprite(mirrors-light) }
+    }
+
+    &#pixelate {
+      .icon { @include icons-sprite(pixelate-dark) }
+      &.active .icon { @include icons-sprite(pixelate-light) }
+    }
+
+    &#bleed {
+      .icon { @include icons-sprite(bleed-dark) }
+      &.active .icon { @include icons-sprite(bleed-light) }
+    }
+
+    &#colors {
+      .icon { @include icons-sprite(themes-dark) }
+      &.active .icon { @include icons-sprite(themes-light) }
+    }
+
+    &#edit {
+      .icon.top { @include icons-sprite(edit-dark) }
+      &.open .icon.top,
+      &.active .icon.top {
+        @include icons-sprite(edit-light);
+        background-color: #fff !important }
+
+      ul {
+        #triangle {
+          .icon { @include icons-sprite(triangle-dark) }
+        }
+
+        #square {
+          .icon { @include icons-sprite(square-dark) }
+        }
+
+        #pentagon {
+          .icon { @include icons-sprite(pentagon-dark) }
+        }
+
+        #circle {
+          .icon { @include icons-sprite(circle-dark) }
+        }
+
+        #special {
+          & .icon { @include icons-sprite(mystery-dark) }
+        }
+
+        #overlap {
+          .icon { @include icons-sprite(overlap-dark) }
+          &.active  .icon { @include icons-sprite(overlap-light) }
+        }
+      }
+    }
+
+    &#hide {
+      &.flip {
+        opacity: 0.1;
+        @include transform(scale(-1, 1)) }
+
+      .icon { @include icons-sprite(hide-dark) }
+    }
+
+    &#intro {
+      border-top: 1px solid rgb(83, 83, 83);
+      height: 50px;
+
+      .icon {
+        @include border-radius(10px);
+        position: relative;
+        top: -35px;
+        @include icons-sprite(intro-dark)
+      }
+    }
+
+    ul {
+      @include horizontal-list(0);
+
+      li {
+        &:first-child {
+          border-left: 1px solid #fff;
+          @include border-radius(0) }
+
+        &:last-child {
+          border-right: none;
+          @include border-radius(0 5px 5px 0) }
+
+        .icon {
+          background-color: #000 !important }
+
+        &.active .icon {
+          background-color: #fff !important }
+
+        &.shape.disabled {
+          .icon {
+            background-color: #e3e3e3 !important;
+            @include transition(background 190ms ease-in); }
+        }
+
+        border-right: 1px solid #fff;
+        border-top-color: #000;
+        width: auto }
+    }
+  }
+}
+
+#viewport {
+  display: block;
+  position: relative;
+  width: 100%;
+  height: auto;
+
+  canvas, img {
+    position: absolute;
+    min-height: 100%;
+    top: 0;
+    z-index: 10;
+    @include transform(scale3d(1, 1, 1) translate3d(0, 0, 0));
+    @include transition(opacity 500ms ease-in); }
+
+  #pixel-img { opacity: 0 }
+  img { z-index: -1 }
+}
+
+noscript {
+  display: block;
+  font-size: 500%;
+  padding: 10%;
+  text-align: center;
+  width: 100%;
+
+  a, a:hover, a:visited, a:focus {
+    color: #666;
+    display: block }
+}

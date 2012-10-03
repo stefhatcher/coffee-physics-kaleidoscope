@@ -1,0 +1,121 @@
+<!--
+                   __
+                  /\ \
+ __  __  __     __\ \ \____
+/\ \/\ \/\ \  /'__`\ \ '__`\
+\ \ \_/ \_/ \/\  __/\ \ \L\ \
+ \ \___x___/'\ \____\\ \_,__/
+  \/__//__/   \/____/ \/___/
+  __
+ /\ \
+ \_\ \     __  __  __
+ /'_` \  /'__`\\ \/\ \
+/\ \L\ \/\  __/ \ \_/ |
+\ \___,_\ \____\ \___/
+ \/__,_ /\/____/\/__/
+
+ -->
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+  <head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+    <title>Kaleidoscope - Instrument</title>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta property="og:title" content="Kaleidoscope Mobile Experiment">
+    <meta property="og:site_name" content="Kaleidoscope by Instrument">
+    <meta property="og:image" content="http://stefhatcher.com/images/stefaniewithaf.png">
+    <meta property="description" content="Kaleidoscope is an interactive visual toy which uses touch on your handheld device to control the output on the screen. Add shapes. Select a color scheme. Abstract it. Have fun!">
+
+    <link rel="shortcut icon" href="favicon.ico">
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="apple-touch-icon-144x144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="apple-touch-icon-114x114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="apple-touch-icon-72x72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="apple-touch-icon-precomposed.png">
+    <link rel="apple-touch-icon" href="apple-touch-icon-precomposed.png">
+
+    <link rel="stylesheet" href="styles/style.css"/>
+
+    <script src="scripts/vendor/modernizr.min.js"></script>
+  </head>
+  <body class="kaleidoscope">
+    <div id="viewport">
+      <noscript>
+        <p>This experiment is no fun without Javascript :(</p>
+        <p>Enable Javascript and <a href="kaleid.html">try again</a></p>
+      </noscript>
+    </div>
+
+    <div id="destroy-all">Clear all</div>
+    <div id="pause"></div>
+
+    <ul id="color-themes"></ul>
+
+    <ul id="modes">
+      <li id="kaleidoscope"><span class="icon">Turn kaleidoscope on</span></li>
+      <li id="pixelate"><span class="icon">Pixelate</span></li>
+      <li id="bleed"><span class="icon">Bleed</span></li>
+      <li id="edit"><span class="icon top">Edit</span>
+        <ul>
+          <li id="colors"><span class="icon">Select color theme</span></li>
+          <li id="triangle" class="shape"><span class="icon">Add a triangle</span></li>
+          <li id="square" class="shape"><span class="icon">Add a square</span></li>
+          <!--  <li id="pentagon" class="shape"><span class="icon">Add a pentagon</span></li> -->
+          <li id="circle" class="shape"><span class="icon">Add a circle</span></li>
+          <li id="special" class="shape"><span class="icon">Special shape</span></li>
+        </ul>
+      </li>
+      <li id="hide"><span class="icon">Hide toolbar</span></li>
+      <li id="intro"><a class="icon" href="index.html">Back to introduction</a></li>
+    </ul>
+
+    <!--[if lt IE 7]>
+      <p class="chromeframe">
+        You are using an outdated browser. 
+        <a href="http://browsehappy.com/">Upgrade your browser today</a> or 
+        <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.
+      </p>
+    <![endif]-->
+
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+    <script>window.jQuery || document.write('<script src="scripts/vendor/jquery.min.js"><\/script>')</script>
+    
+    <!-- build:js scripts/coffee-physics.js -->
+    <script src="scripts/compiled/base.js"></script>
+    <script src="scripts/compiled/math/Random.js"></script>
+    <script src="scripts/compiled/math/Vector.js"></script>
+    <script src="scripts/compiled/engine/integrator/Integrator.js"></script>
+    <script src="scripts/compiled/engine/integrator/Euler.js"></script>
+    <script src="scripts/compiled/engine/integrator/ImprovedEuler.js"></script>
+    <script src="scripts/compiled/engine/integrator/Verlet.js"></script>
+    <script src="scripts/compiled/engine/Particle.js"></script>
+    <script src="scripts/compiled/engine/Physics.js"></script>
+    <script src="scripts/compiled/engine/Spring.js"></script>
+    <script src="scripts/compiled/behaviour/Behaviour.js"></script>
+    <script src="scripts/compiled/behaviour/Attraction.js"></script>
+    <script src="scripts/compiled/behaviour/Collision.js"></script>
+    <script src="scripts/compiled/behaviour/ConstantForce.js"></script>
+    <script src="scripts/compiled/behaviour/EdgeBounce.js"></script>
+    <script src="scripts/compiled/behaviour/EdgeWrap.js"></script>
+    <script src="scripts/compiled/behaviour/Wander.js"></script>
+    <!-- endbuild -->
+    <script src="scripts/close-pixelate.min.js"></script>
+    <!-- build:js scripts/script.js -->
+    <script src="scripts/colors.js"></script>
+    <script src="scripts/canvas.js"></script>
+    <script src="scripts/kaleid.js"></script>
+    <script src="scripts/controls.js"></script>
+    <!-- endbuild -->
+
+    <script>
+      var _gaq=[['_setAccount','UA-20906195-1'],['_trackPageview']];
+      (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+      g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
+      s.parentNode.insertBefore(g,s)}(document,'script'));
+    </script>
+  </body>
+</html>
