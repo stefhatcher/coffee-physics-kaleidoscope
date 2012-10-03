@@ -25,23 +25,23 @@ body.kaleidoscope {
 
   @include border-radius(5px);
   display: block;
-  position: absolute; bottom: 5px; right: 5px;
-  background: #000;
-  color: #fff;
+  position: absolute; bottom: 235px; left: 5px;
+  background: #fff;
+  color: #000;
   z-index: 100000;
   height: 40px;
   width: 40px;
   text-align: center;
-  line-height: 40px;
+  line-height: 45px;
 
   &.active {
-    background: #fff;
-    color: #000;
+    background: #000;
+    color: #fff }
 
-    &:after {
-      content: '▶';
-    }
-  }
+  &.minimized {
+    opacity: 0.1;
+    bottom: 75px;
+    left: -5px; }
 }
 
 #color-themes {
@@ -94,7 +94,7 @@ body.kaleidoscope {
 
   &.collapsed {
     left: -5px;
-    bottom: 5 + $icon_width / 2; }
+    bottom: 30px; }
 
   li {
     height: $icon_width;
@@ -103,8 +103,8 @@ body.kaleidoscope {
     width: $icon_width;
 
     &.open { width: 400% }
-    &:first-child { @include border-radius(5px 5px 0 0) }
-    &:last-child { @include border-radius(0 0 5px 5px) }
+    &:first-child { @include border-radius(10px 10px 0 0) }
+    &:last-child { @include border-radius(0 0 10px 10px) }
 
     > .icon { border-top: 1px solid #fff }
     > .icon:first-child { border-top: none }
@@ -186,7 +186,17 @@ body.kaleidoscope {
       .icon { @include icons-sprite(hide-dark) }
     }
 
-    &#intro .icon { @include icons-sprite(intro-dark) }
+    &#intro {
+      border-top: 1px solid rgb(83, 83, 83);
+      height: 50px;
+
+      .icon {
+        @include border-radius(10px);
+        position: relative;
+        top: -35px;
+        @include icons-sprite(intro-dark)
+      }
+    }
 
     ul {
       @include horizontal-list(0);
