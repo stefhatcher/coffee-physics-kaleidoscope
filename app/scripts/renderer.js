@@ -5,8 +5,7 @@ var view,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
 view = (function() {
-  function view(scale) {
-    this.scale = scale || 1;
+  function view() {
     this.setSize = __bind(this.setSize, this);
     this.width = 0;
     this.height = 0;

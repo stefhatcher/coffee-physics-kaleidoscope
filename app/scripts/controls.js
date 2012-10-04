@@ -39,6 +39,7 @@ controls = (function() {
     this.items = {};
     this.themes = $('#color-themes').hide();
     this.pixelate = false;
+    this.pixelImgId = 'pixel-img';
 
     this.actions = {
       'kaleidoscope': this.toggleMirrors,
@@ -48,10 +49,11 @@ controls = (function() {
       'edit': this.toggleEdit,
       'hide': this.toggleMenu,
       'animate': this.togglePause,
-      'destroy-all': this.resetAll
+      'reset': this.resetAll,
+      'screenshot a': this.export
     };
 
-    var item, startEvent = (Modernizr && Modernizr.touch) ? 'touchend' : 'mouseup';
+    var item, startEvent = (Modernizr && Modernizr.touch) ? 'touchmove touchend' : 'mousedown';
     for (var action in this.actions) {
       item = $('#' + action);
       item.bind(startEvent, __bind(this.actions[action], this));
@@ -64,11 +66,37 @@ controls = (function() {
 
     $('li.shape').bind(startEvent, __bind(this.addShape, this));
     $(this.world.container).bind(startEvent, __bind(this.step, this));
+
+    if (!Modernizr.localstorage) {
+      this.items['screenshot a'].remove();
+    }
   }
 
+  controls.prototype.export = function(e) {
+    e.stopPropagation();
+    e.preventDefault();
+
+    var data;
+
+    if (this.pixelate) {
+      data = document.getElementById(this.pixelImgId).toDataURL('png/image');
+    } else if (this.world.view.reflect) {
+      data = this.world.view.mirrors.toDataURL('png/image');
+    } else {
+      data = this.world.view.canvas.toDataURL('png/image');
+    }
+
+    localStorage.setItem('kaleidoscope_screenshot', data);
+
+    return true;
+  };
+
   controls.prototype.resetAll = function(e) {
-     if (confirm("Clear all of the things?")) {
-      $('#pixel-img').remove();
+    e && e.stopPropagation();
+
+    if (confirm("Clear all of the things?")) {
+      this.pixelate = false;
+      this.items['pixelate'].removeClass('active');
 
       this.pause();
       this.items['edit'].addClass('open');
@@ -78,6 +106,12 @@ controls = (function() {
       this.world.view.reset();
 
       this.world.setup();
+
+      localStorage.setItem('kaleidoscope_screenshot', '');
+
+      $('#' + this.pixelImgId).remove();
+      $(this.world.view.canvas).show();
+      $(this.world.view.mirrors).show();
     }
   };
 
@@ -86,14 +120,17 @@ controls = (function() {
   };
 
   controls.prototype.pause = function(e) {
-    this.items['animate'].removeClass('active');
+    this.items['animate'].removeClass('playing').addClass('paused');
     this.playing = false;
   };
 
   controls.prototype.play = function() {
-    this.items['animate'].addClass('active');
+    this.items['animate'].removeClass('paused').addClass('playing');
     this.items['edit'].removeClass('open');
+    this.items['reset'].hide();
     this.playing = true;
+
+    this.pixelate && this.togglePixelate();
   };
 
   controls.prototype.step = function(e) {
@@ -126,7 +163,7 @@ controls = (function() {
 
   // shape controls
   controls.prototype.addShape = function(e) {
-    e.stopPropagation();
+    e && e.stopPropagation();
     this.world.addShape($(e.target).parent().attr('id'));
   };
 
@@ -173,10 +210,12 @@ controls = (function() {
 
     if (this.items['edit'].hasClass('open')) {
       this.pause();
+      this.items['reset'].show();
     } else {
       this.play();
       this.items['colors'].removeClass('active');
       this.themes.hide();
+      this.items['reset'].hide();
     }
   };
 
@@ -188,8 +227,13 @@ controls = (function() {
                       .siblings().toggle()
                       .parent().toggleClass('collapsed');
 
-    this.items['destroy-all'].toggle();
     this.items['animate'].toggleClass('minimized');
+
+    if (this.items['hide'].hasClass('flip')) {
+      this.items['reset'].hide();
+    } else if (this.items['edit'].hasClass('open')) {
+      this.items['reset'].show();
+    }
   };
 
   controls.prototype.toggleMirrors = function(e) {
@@ -198,27 +242,26 @@ controls = (function() {
     this.items['kaleidoscope'].toggleClass('active');
     this.world.view.reflect = !this.world.view.reflect;
 
-    if (!this.world.view.reflect) {
-      $(this.world.view.canvas).fadeIn('fast');
-      $(this.world.view.mirrors).fadeOut('fast');
-      this.world.view.mctx.clearRect(0, 0, this.world.width, this.world.height);
-    } else {
-      $(this.world.view.canvas).fadeOut('fast');
-      $(this.world.view.mirrors).fadeIn('fast');
-
-      !this.playing && this.world.view.render(this.world.physics);
+    if (!this.pixelate) {
+      if (!this.world.view.reflect) {
+        $(this.world.view.canvas).show();
+        $(this.world.view.mirrors).hide();
+        this.world.view.mctx.clearRect(0, 0, this.world.width, this.world.height);
+      } else {
+        $(this.world.view.canvas).hide();
+        $(this.world.view.mirrors).show();
+        !this.playing && this.world.view.render(this.world.physics);
+      }
     }
   };
 
   controls.prototype.togglePixelate = function(e) {
     e && e.stopPropagation();
 
+    this.items['pixelate'].toggleClass('active');
     this.pixelate = !this.pixelate;
 
     if (this.pixelate) {
-      $('#pixel-img').remove();
-      this.items['pixelate'].addClass('active');
-
       // pixelate the currently visible world
       if (this.world.view.reflect) {
         data = this.world.view.mirrors.toDataURL('png/image');
@@ -229,7 +272,7 @@ controls = (function() {
       var obj = this,
           img = document.createElement('img');
           img.src = data;
-          img.id = 'pixel-img';
+          img.id = this.pixelImgId;
           img.style.opacity = 0;
 
       img.addEventListener('load', function(){
@@ -238,15 +281,17 @@ controls = (function() {
           { shape: 'diamond', resolution: 18, size: 38, offset: 0, alpha: 0.651 }
         ]);
 
-        setTimeout(function(){
-          $('#pixel-img').css('opacity', 0.4);
-          obj.items['pixelate'].removeClass('active');
-        }, 500);
-
+        $('#' + obj.pixelImgId).css('opacity', 1);
+        $(obj.world.view.canvas).fadeOut(0);
+        $(obj.world.view.mirrors).fadeOut(0);
+        
       }, false);
     
       this.world.container.appendChild(img);
-      this.pixelate = false;  
+    } else {
+      $(this.world.view.canvas).fadeIn(0);
+      $(this.world.view.mirrors).fadeIn(0);
+      $('#' + this.pixelImgId).remove();
     }
   };
 

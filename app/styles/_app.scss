@@ -1,8 +1,21 @@
+%icon-shrink {
+  @include transform(scale(0.5));
+  -webkit-transform-origin: bottom left;
+  -moz-transform-origin: bottom left;
+  -ms-transform-origin: bottom left;
+  -o-transform-origin: bottom left;
+  transform-origin: bottom left;
+
+  @media only screen and (min-width : 321px) and (orientation : landscape) {
+    @include transform(scale(0.4));
+  };
+}
+
 body.kaleidoscope {
   background: rgba(#f9f9de, 0.75);
   overflow: hidden }
 
-#destroy-all {
+#reset {
   cursor: pointer;
   display: block;
   position: absolute; top: 5px; right: 5px;
@@ -12,6 +25,11 @@ body.kaleidoscope {
   @include icons-sprite(trash-dark);
   z-index: 10000;
   @include transform(scale(0.5));
+
+  @media only screen and (min-width : 321px) and (orientation : landscape) {
+    @include transform(scale(0.4));
+  };
+
   -webkit-transform-origin: top right;
   -moz-transform-origin: top right;
   -ms-transform-origin: top right;
@@ -19,29 +37,33 @@ body.kaleidoscope {
   transform-origin: top right }
 
 #animate {
-  &:after {
-    content: '▶';
-  }
-
+  @include icons-sprite(play-light);
   @include border-radius(5px);
+  @extend %icon-shrink;
   display: block;
-  position: absolute; bottom: 235px; left: 5px;
-  background: #fff;
-  color: #000;
+  position: absolute; bottom: 195px; left: 5px;
+  background-color: #fff;
   z-index: 100000;
-  height: 40px;
-  width: 40px;
   text-align: center;
   line-height: 45px;
+  height: 80px;
+  width: 80px;
 
-  &.active {
-    background: #000;
-    color: #fff }
+  &.playing {
+    @include icons-sprite(pause-dark);
+    background-color: #000;
+  }
 
   &.minimized {
     opacity: 0.1;
     bottom: 75px;
     left: -5px; }
+
+  @media only screen and (min-width : 321px) and (orientation : landscape) {
+    bottom: 155px;
+
+    &.minimized { bottom: 65px }
+  }
 }
 
 #color-themes {
@@ -73,6 +95,7 @@ body.kaleidoscope {
 }
 
 #modes {
+  @extend %icon-shrink;
   @include user-select(none);
   display: block;
   font-size: 2em;
@@ -85,12 +108,6 @@ body.kaleidoscope {
   left: 5px; bottom: 5px;
   text-align: center;
   z-index: 10000;
-  @include transform(scale(0.5));
-  -webkit-transform-origin: bottom left;
-  -moz-transform-origin: bottom left;
-  -ms-transform-origin: bottom left;
-  -o-transform-origin: bottom left;
-  transform-origin: bottom left;
 
   &.collapsed {
     left: -5px;
@@ -101,6 +118,8 @@ body.kaleidoscope {
     line-height: $icon_width;
     overflow: hidden;
     width: $icon_width;
+
+    &:focus { outline: none }
 
     &.open { width: 400% }
     &:first-child { @include border-radius(10px 10px 0 0) }
@@ -126,11 +145,6 @@ body.kaleidoscope {
     &#kaleidoscope {
       .icon { @include icons-sprite(mirrors-dark) }
       &.active .icon { @include icons-sprite(mirrors-light) }
-    }
-
-    &#pixelate {
-      .icon { @include icons-sprite(pixelate-dark) }
-      &.active .icon { @include icons-sprite(pixelate-light) }
     }
 
     &#bleed {
@@ -216,15 +230,56 @@ body.kaleidoscope {
         &.active .icon {
           background-color: #fff !important }
 
-        &.shape.disabled {
-          .icon {
-            background-color: #e3e3e3 !important;
-            @include transition(background 190ms ease-in); }
-        }
-
         border-right: 1px solid #fff;
         border-top-color: #000;
         width: auto }
+    }
+  }
+}
+
+#paused-opts {
+  @extend %icon-shrink;
+  @include horizontal-list(0);
+  position: absolute; bottom: 195px; left: 50px;
+  text-align: center;
+  z-index: 10000;
+
+  #animate.playing + & { display: none }
+  #animate.paused + & { display: block }
+  #animate.minimized + & { display: none !important }
+
+  @media only screen and (min-width : 321px) and (orientation : landscape) {
+    bottom: 155px;
+    left: 40px;
+  }
+
+  li {
+    @include border-radius(10px);
+    height: $icon_width;
+    line-height: $icon_width;
+    overflow: hidden;
+    width: $icon_width;
+
+    &:focus { outline: none }
+
+    .icon {
+      background-color: #000 !important;
+      cursor: pointer;
+      display: block;
+      @include hide-text();
+      width: $icon_width; }
+
+    &.active .icon {
+      background-color: #fff !important }
+
+    &#pixelate {
+      .icon { @include icons-sprite(pixelate-dark) }
+      &.active .icon { @include icons-sprite(pixelate-light) }
+    }
+
+    &#screenshot {
+      margin-left: 10px;
+      .icon { @include icons-sprite(camera) }
     }
   }
 }
@@ -240,8 +295,7 @@ body.kaleidoscope {
     min-height: 100%;
     top: 0;
     z-index: 10;
-    @include transform(scale3d(1, 1, 1) translate3d(0, 0, 0));
-    @include transition(opacity 500ms ease-in); }
+    @include transform(translate3d(0, 0, 0)); }
 
   #pixel-img { opacity: 0 }
   img { z-index: -1 }
