@@ -123,14 +123,17 @@
 #nav {
   font-size: x-large;
   font-weight: 700;
-  @include horizontal-list(0.25em);
+  @include horizontal-list(0);
   @include user-select(none);
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  width: 100%;
 
   li {
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
     color: #fff;
     cursor: pointer;
+    text-align: center;
+    width: 33%;
 
     &.active { color: #000 }
 

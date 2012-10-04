@@ -13,6 +13,8 @@ kaleid = (function() {
   }
 
   kaleid.prototype.setup = function() {
+    var max = Math.max(this.width, this.height);
+
     this.renderTime = 0;
     this.counter = 0;
 
@@ -26,9 +28,9 @@ kaleid = (function() {
     this.physics.integrator = new ImprovedEuler();
     this.center = new Attraction(this.mouse.pos, 500, 1200);
 
-    this.edge = new EdgeBounce(
+    this.edge = new EdgeWrap(
                   new Vector(0, 0),
-                  new Vector(this.width, this.height));
+                  new Vector(max, max));
 
     this.view.mouse = this.mouse;
     this.view.init(this.physics);
@@ -104,7 +106,8 @@ kaleid = (function() {
     this.height = window.innerHeight;
     this.container.style.width = this.width + 'px';
     this.container.style.height = this.height + 'px';
-    return this.view.setSize(this.width, this.height, this.landscape);
+    this.view.setSize(this.width, this.height, this.landscape);
+    return this.view.render(this.physics);
   };
 
   // update loop
