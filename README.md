@@ -16,7 +16,7 @@ Source lives under /app/. Run the server if editing SCSS.
   /app/scripts/kaleid.js      # physics + some canvas related code
   /app/scripts/renderer.js    # rendering the world at its various states
   
-  /app/styles/main.scss       # SASS + COMPASS css. Run yeoman server:app first
+  /app/styles/main.scss       # SASS + COMPASS. Run yeoman server:app first
 ```
 
 ## Yeoman
