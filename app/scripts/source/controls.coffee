@@ -1,6 +1,5 @@
 class Controls
-
-	constructor: ->
+  constructor: ->
     @playing = false
 
   init: (world) ->
