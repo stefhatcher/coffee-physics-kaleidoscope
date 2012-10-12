@@ -1,5 +1,4 @@
 class Renderer
-
   constructor: ->
     @TO_RADIAN = Math.PI / 180
     @TWO_PI = Math.PI * 2
