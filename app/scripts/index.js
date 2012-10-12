@@ -6,6 +6,7 @@
   startTop = $('#start');
   if (startTop != null) {
     startTop = startTop.offset().top - 10;
+    $('#main .content').height($('.help.content').height() + 'px');
   }
   $('html, body').animate({
     scrollTop: bodyEl.offset().top

@@ -141,7 +141,7 @@ module.exports = function( grunt ) {
     usemin: {
       html: ['**/*.html'],
       css: ['**/*.css'],
-      js: ['**/*.js', 'scripts/*.js', 'scripts/coffee-physics.js']
+      js: ['**/*.js', 'scripts/*.js', 'scripts/coffee-physics.js', 'scripts/index.js']
     },
 
     // HTML minification

@@ -5,6 +5,7 @@ do ->
 
   if startTop?
     startTop = startTop.offset().top - 10
+    $('#main .content').height $('.help.content').height() + 'px'
 
   $('html, body').animate { scrollTop: bodyEl.offset().top }, 190
 

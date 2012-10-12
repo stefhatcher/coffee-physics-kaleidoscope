@@ -1,4 +1,5 @@
 class World
+
 	constructor: ->
     @COLORS = COLOR_THEMES[0]
     @THEMES = COLOR_THEMES
