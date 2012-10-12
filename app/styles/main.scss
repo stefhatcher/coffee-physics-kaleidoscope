@@ -1,0 +1,517 @@
+@import "compass";
+@import "compass/css3/user-interface";
+
+$legacy-support-for-ie6:             false;
+$legacy-support-for-ie7:             true;
+$legacy-support-for-ie8:             true;
+$experimental-support-for-webkit:    true;
+$experimental-support-for-microsoft: true;
+$experimental-support-for-mozilla:   true;
+$experimental-support-for-opera:     true;
+$experimental-support-for-khtml:     false;
+$experimental-support-for-svg: true;
+
+$break-big: 768px;
+$break-bigger: 900px;
+$break-small: 360px;
+
+$icon_width: 80px;
+
+@import "icons/*.png";
+
+* { @include box-sizing(border-box) }
+
+a, a:hover, a:visited, a:focus {
+  color: #fff;
+  text-decoration: none }
+
+html {
+  overflow: auto }
+
+html,body {
+  min-height: 100%;
+  height: auto;
+  width: 100%;
+  margin:0;
+  padding:0;
+  position: relative }
+
+body {
+  color: #000;
+  font-family: Helvetica, Arial, Sans-Serif;
+  font-size: 100%;
+  -webkit-font-smoothing: antialiased }
+
+%icon-shrink {
+  @include transform(scale(0.5));
+  -webkit-transform-origin: bottom left;
+  -moz-transform-origin: bottom left;
+  -ms-transform-origin: bottom left;
+  -o-transform-origin: bottom left;
+  transform-origin: bottom left;
+
+  @media only screen and (min-width : 321px) and (orientation : landscape) {
+    @include transform(scale(0.4));
+  };
+}
+
+body.kaleidoscope {
+  background: rgba(#f9f9de, 0.75);
+  overflow: hidden }
+
+#reset {
+  cursor: pointer;
+  display: block;
+  position: absolute; top: 5px; right: 5px;
+  width: $icon_width;
+  height: $icon_width;
+  @include hide-text();
+  @include icons-sprite(trash-dark);
+  z-index: 10000;
+  @include transform(scale(0.5));
+
+  @media only screen and (min-width : 321px) and (orientation : landscape) {
+    @include transform(scale(0.4));
+  }
+
+  -webkit-transform-origin: top right;
+  -moz-transform-origin: top right;
+  -ms-transform-origin: top right;
+  -o-transform-origin: top right;
+  transform-origin: top right; }
+
+#animate {
+  @include icons-sprite(play-dark);
+  @include border-radius(5px);
+  @extend %icon-shrink;
+  display: block;
+  position: absolute; bottom: 195px; left: 5px;
+  background-color: #000;
+  z-index: 100000;
+  text-align: center;
+  line-height: 45px;
+  height: 80px;
+  width: 80px;
+
+  &.playing {
+    @include icons-sprite(pause-dark);
+    background-color: #000;
+  }
+
+  &.minimized {
+    opacity: 0.1;
+    bottom: 75px;
+    left: -5px; }
+
+  @media only screen and (min-width : 321px) and (orientation : landscape) {
+    bottom: 155px;
+
+    &.minimized { bottom: 65px }
+  }
+}
+
+#color-themes {
+  background: #fff;
+  @include horizontal-list(0);
+  position: absolute;
+  top: 0;
+  z-index: 100000;
+  left: 0;
+  right: 0;
+
+  li {
+    width: 20%;
+
+    h2 {
+      background: #000;
+      color: #fff;
+      font-weight: 400;
+      margin: 0;
+      padding: 0.25em 0;
+      text-align: center }
+
+    span {
+      display: inline-block;
+      float: left;
+      height: 2.75em;
+      width: 25% }
+  }
+}
+
+#modes {
+  @extend %icon-shrink;
+  @include user-select(none);
+  display: block;
+  font-size: 2em;
+  font-weight: 700;
+  @include no-bullets();
+  margin: 0;
+  opacity: 1;
+  padding: 0;
+  position: absolute;
+  left: 5px; bottom: 5px;
+  text-align: center;
+  z-index: 10000;
+
+  &.collapsed {
+    left: -5px;
+    bottom: 30px; }
+
+  li {
+    height: $icon_width;
+    line-height: $icon_width;
+    overflow: hidden;
+    width: $icon_width;
+
+    &:focus { outline: none }
+
+    &.open { width: 400% }
+    &:first-child { @include border-radius(10px 10px 0 0) }
+    &:last-child { @include border-radius(0 0 10px 10px) }
+
+    > .icon { border-top: 1px solid #fff }
+    > .icon:first-child { border-top: none }
+
+    .icon {
+      background-color: #000 !important;
+      cursor: pointer;
+      display: block;
+      @include hide-text();
+      width: $icon_width;
+
+      &.top {
+        display: inline-block;
+        float: left }
+    }
+
+    &.active .icon { background-color: #fff !important }
+
+    &#kaleidoscope {
+      .icon { @include icons-sprite(mirrors-dark) }
+      &.active .icon { @include icons-sprite(mirrors-light) }
+    }
+
+    &#bleed {
+      .icon { @include icons-sprite(bleed-dark) }
+      &.active .icon { @include icons-sprite(bleed-light) }
+    }
+
+    &#colors {
+      .icon { @include icons-sprite(themes-dark) }
+      &.active .icon { @include icons-sprite(themes-light) }
+    }
+
+    &#edit {
+      .icon.top { @include icons-sprite(edit-dark) }
+      &.open .icon.top,
+      &.active .icon.top {
+        @include icons-sprite(edit-light);
+        background-color: #fff !important }
+
+      ul {
+        #triangle {
+          .icon { @include icons-sprite(triangle-dark) }
+        }
+
+        #square {
+          .icon { @include icons-sprite(square-dark) }
+        }
+
+        #pentagon {
+          .icon { @include icons-sprite(pentagon-dark) }
+        }
+
+        #circle {
+          .icon { @include icons-sprite(circle-dark) }
+        }
+
+        #special {
+          & .icon { @include icons-sprite(mystery-dark) }
+        }
+
+        #overlap {
+          .icon { @include icons-sprite(overlap-dark) }
+          &.active  .icon { @include icons-sprite(overlap-light) }
+        }
+      }
+    }
+
+    &#hide {
+      &.flip {
+        opacity: 0.1;
+        @include transform(scale(-1, 1)) }
+
+      .icon { @include icons-sprite(hide-dark) }
+    }
+
+    &#intro {
+      border-top: 1px solid rgb(83, 83, 83);
+      height: 50px;
+
+      .icon {
+        @include border-radius(10px);
+        position: relative;
+        top: -35px;
+        @include icons-sprite(intro-dark)
+      }
+    }
+
+    ul {
+      @include horizontal-list(0);
+
+      li {
+        &:first-child {
+          border-left: 1px solid #fff;
+          @include border-radius(0) }
+
+        &:last-child {
+          border-right: none;
+          @include border-radius(0 5px 5px 0) }
+
+        .icon {
+          background-color: #000 !important }
+
+        &.active .icon {
+          background-color: #fff !important }
+
+        border-right: 1px solid #fff;
+        border-top-color: #000;
+        width: auto }
+    }
+  }
+}
+
+#paused-opts {
+  @extend %icon-shrink;
+  @include horizontal-list(0);
+  position: absolute; bottom: 195px; left: 50px;
+  text-align: center;
+  z-index: 10000;
+
+  #animate.playing + & { display: none }
+  #animate.paused + & { display: block }
+  #animate.minimized + & { display: none !important }
+
+  @media only screen and (min-width : 321px) and (orientation : landscape) {
+    bottom: 155px;
+    left: 40px;
+  }
+
+  li {
+    @include border-radius(10px);
+    height: $icon_width;
+    line-height: $icon_width;
+    overflow: hidden;
+    width: $icon_width;
+
+    &:focus { outline: none }
+
+    .icon {
+      background-color: #000 !important;
+      cursor: pointer;
+      display: block;
+      @include hide-text();
+      width: $icon_width; }
+
+    &.active .icon {
+      background-color: #fff !important }
+
+    &#pixelate {
+      .icon { @include icons-sprite(pixelate-dark) }
+      &.active .icon { @include icons-sprite(pixelate-light) }
+    }
+
+    &#screenshot {
+      margin-left: 10px;
+      .icon { @include icons-sprite(camera) }
+    }
+  }
+}
+
+#viewport {
+  display: block;
+  position: relative;
+  width: 100%;
+  height: auto;
+
+  canvas, img {
+    position: absolute;
+    min-height: 100%;
+    top: 0;
+    z-index: 10;
+    @include transform(translate3d(0, 0, 0)); }
+
+  #pixel-img { opacity: 0 }
+  img { z-index: -1 }
+}
+
+noscript {
+  display: block;
+  font-size: 500%;
+  padding: 10%;
+  text-align: center;
+  width: 100%;
+
+  a, a:hover, a:visited, a:focus {
+    color: #666;
+    display: block }
+}
+
+#cheat-sheet {
+  background: #000;
+  @include border-radius(2px);
+  color: #fff;
+  padding: 10px;
+
+  dt {
+    border-bottom: 1px solid #666;
+    font-size: larger;
+    font-weight: 700;
+    padding: 0 0 5px;
+  }
+
+  dd {
+    color: #7f7f7f;
+    font-size: 110%;
+    margin: 5px 0 20px;
+    min-height: 50px;
+    padding: 0 0 0 60px;
+    position: relative;
+  }
+
+  .icon {
+    position: absolute;
+    top: -20px; left: -15px;
+    height: 80px;
+    width: 80px;
+    @include transform(scale(0.5));
+
+    &.playing { @include icons-sprite(play-dark) }
+    &.paused { @include icons-sprite(pause-dark) }
+    &.save { @include icons-sprite(camera) }
+    &.kaleidoscope { @include icons-sprite(mirrors-dark) }
+    &.pixelate { @include icons-sprite(pixelate-dark) }
+    &.bleed { @include icons-sprite(bleed-dark) }
+    &.color-themes { @include icons-sprite(themes-dark) }
+    &.edit { @include icons-sprite(edit-dark) }
+    &.hide-menu { @include icons-sprite(hide-dark) }
+    &.back-to-intro { @include icons-sprite(intro-dark) }
+  }
+}
+
+#footer {
+  clear: both;
+
+  p {
+    color: #7f7f7f;
+    font-size: small;
+    margin: 0 }
+}
+
+#header {
+  border-bottom: 1px solid #666;
+  margin-bottom: 20px;
+  overflow: hidden;
+
+  h1 {
+    font-size: xx-large;
+    line-height: 0.95em;
+    margin: 0;
+
+    a { font-size: x-large }
+  }
+
+  img {
+    display: block;
+    margin: 20px auto 0 }
+}
+
+#home {
+  background: #555 image-url('background.jpg') repeat top left;
+
+  &.about   #main .content.about,
+  &.help    #main .content.help,
+  &.credits #main .content.credits { display: block }
+
+  .wrapper {
+    margin: 0 auto;
+    padding: 15px;
+    width: 100%;
+
+    @media screen and (min-width: $break-big) {
+      width: 100% }
+  }
+}
+
+#main {
+  margin-bottom: 40px;
+
+  @media screen and (min-width: $break-big) {
+    overflow: hidden }
+
+  .content {
+    border-top: 1px solid #666;
+    display: none;
+    line-height: 1.5em;
+    min-height: 350px;
+
+    p {
+      font-size: 110%;
+      width: 90%; }
+
+    p a {
+      color: #7f7f7f }
+
+    &.credits span {
+      display: inline-block;
+      color: #fff;
+      width: 5em }
+
+    &.credits ul {
+      font-size: 110%;
+      margin: 1em auto;
+      width: 14em; }
+
+    ul {
+      @include no-bullets();
+      margin: 1em 0;
+      padding: 0 }
+  }
+}
+
+#nav {
+  font-size: x-large;
+  font-weight: 700;
+  @include horizontal-list(0);
+  @include user-select(none);
+  margin-bottom: 20px;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  width: 100%;
+
+  li {
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    color: #fff;
+    cursor: pointer;
+    text-align: center;
+    width: 33%;
+
+    &.active {
+      color: #000; }
+
+    &:focus, &:active, &:hover { outline: none }
+
+    @media screen and (min-width: $break-big) {
+      float: left;
+      padding: 0 20px 0 0;
+      width: 1/3 * 100% }
+  }
+}
+
+#start {
+  color: #fff;
+  display: inline-block;
+  float: right;
+  font-size: x-large;
+  font-weight: 700;
+  margin: 0 0 20px;
+  text-align: right }

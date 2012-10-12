@@ -38,7 +38,7 @@
     <link rel="apple-touch-icon-precomposed" href="apple-touch-icon-precomposed.png">
     <link rel="apple-touch-icon" href="apple-touch-icon-precomposed.png">
 
-    <link rel="stylesheet" href="styles/style.css"/>
+    <link rel="stylesheet" href="styles/main.css"/>
 
     <script src="scripts/vendor/modernizr.min.js"></script>
   </head>
@@ -76,49 +76,42 @@
       <li id="intro"><a class="icon" href="index.html">Back to introduction</a></li>
     </ul>
 
-    <!--[if lt IE 7]>
-      <p class="chromeframe">
-        You are using an outdated browser. 
-        <a href="http://browsehappy.com/">Upgrade your browser today</a> or 
-        <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.
-      </p>
-    <![endif]-->
-
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
     <script>window.jQuery || document.write('<script src="scripts/vendor/jquery.min.js"><\/script>')</script>
     
     <!-- build:js scripts/coffee-physics.js -->
-    <script src="scripts/compiled/base.js"></script>
-    <script src="scripts/compiled/math/Random.js"></script>
-    <script src="scripts/compiled/math/Vector.js"></script>
-    <script src="scripts/compiled/engine/integrator/Integrator.js"></script>
-    <script src="scripts/compiled/engine/integrator/Euler.js"></script>
-    <script src="scripts/compiled/engine/integrator/ImprovedEuler.js"></script>
-    <script src="scripts/compiled/engine/integrator/Verlet.js"></script>
-    <script src="scripts/compiled/engine/Particle.js"></script>
-    <script src="scripts/compiled/engine/Physics.js"></script>
-    <script src="scripts/compiled/engine/Spring.js"></script>
-    <script src="scripts/compiled/behaviour/Behaviour.js"></script>
-    <script src="scripts/compiled/behaviour/Attraction.js"></script>
-    <script src="scripts/compiled/behaviour/Collision.js"></script>
-    <script src="scripts/compiled/behaviour/ConstantForce.js"></script>
-    <script src="scripts/compiled/behaviour/EdgeBounce.js"></script>
-    <script src="scripts/compiled/behaviour/EdgeWrap.js"></script>
-    <script src="scripts/compiled/behaviour/Wander.js"></script>
+    <script src="scripts/coffee-physics-compiled/base.js"></script>
+    <script src="scripts/coffee-physics-compiled/math/Random.js"></script>
+    <script src="scripts/coffee-physics-compiled/math/Vector.js"></script>
+    <script src="scripts/coffee-physics-compiled/engine/integrator/Integrator.js"></script>
+    <script src="scripts/coffee-physics-compiled/engine/integrator/Euler.js"></script>
+    <script src="scripts/coffee-physics-compiled/engine/integrator/ImprovedEuler.js"></script>
+    <script src="scripts/coffee-physics-compiled/engine/integrator/Verlet.js"></script>
+    <script src="scripts/coffee-physics-compiled/engine/Particle.js"></script>
+    <script src="scripts/coffee-physics-compiled/engine/Physics.js"></script>
+    <script src="scripts/coffee-physics-compiled/engine/Spring.js"></script>
+    <script src="scripts/coffee-physics-compiled/behaviour/Behaviour.js"></script>
+    <script src="scripts/coffee-physics-compiled/behaviour/Attraction.js"></script>
+    <script src="scripts/coffee-physics-compiled/behaviour/Collision.js"></script>
+    <script src="scripts/coffee-physics-compiled/behaviour/ConstantForce.js"></script>
+    <script src="scripts/coffee-physics-compiled/behaviour/EdgeBounce.js"></script>
+    <script src="scripts/coffee-physics-compiled/behaviour/EdgeWrap.js"></script>
+    <script src="scripts/coffee-physics-compiled/behaviour/Wander.js"></script>
     <!-- endbuild -->
     <script src="scripts/close-pixelate.min.js"></script>
     <!-- build:js scripts/script.js -->
     <script src="scripts/colors.js"></script>
+    <script src="scripts/requestAnimationFrame.js"></script>
     <script src="scripts/renderer.js"></script>
-    <script src="scripts/kaleid.js"></script>
+    <script src="scripts/world.js"></script>
     <script src="scripts/controls.js"></script>
     <!-- endbuild -->
 
     <script>
-      var _gaq=[['_setAccount','UA-20906195-1'],['_trackPageview']];
-      (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
-      g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
-      s.parentNode.insertBefore(g,s)}(document,'script'));
+      var _gaq=[["_setAccount","UA-652845-53"],["_trackPageview"]];
+      (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];g.async=1;
+      g.src=("https:"==location.protocol?"//ssl":"//www")+".google-analytics.com/ga.js";
+      s.parentNode.insertBefore(g,s)}(document,"script"));
     </script>
   </body>
 </html>

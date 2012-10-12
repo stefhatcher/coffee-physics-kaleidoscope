@@ -1,195 +1,196 @@
-PI_RAD = Math.PI / 180;
-TWO_PI = Math.PI * 2;
-
-var view,
+var Renderer,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
-view = (function() {
-  function view() {
+Renderer = (function() {
+
+  function Renderer() {
     this.setSize = __bind(this.setSize, this);
+    this.TO_RADIAN = Math.PI / 180;
+    this.TWO_PI = Math.PI * 2;
     this.width = 0;
     this.height = 0;
-    this.renderParticles = true;
-    this.renderSprings = true;
-    this.renderMouse = true;
+    this.landscape = 0;
+    this.centerX = 0;
+    this.centerY = 0;
     this.initialized = false;
     this.renderTime = 0;
-    this.canvas = document.createElement('canvas');
-    this.mirrors = document.createElement('canvas');
-    this.offscreen = document.createElement('canvas');
-    this.ctx = this.canvas.getContext('2d');
-    this.mctx = this.mirrors.getContext('2d');
-    this.octx = this.offscreen.getContext('2d');
-    this.domElement = this.canvas;
-    this.bleed = false;
-    this.reflect = false;
-    this.xo = 0;
-    this.yo = 0;
-    this.landscape = 0;
+    this.cnvs = document.createElement('canvas');
+    this.ctx = this.cnvs.getContext('2d');
+    this.mirror = document.createElement('canvas');
+    this.mctx = this.mirror.getContext('2d');
+    this.offscrn = document.createElement('canvas');
+    this.octx = this.offscrn.getContext('2d');
+    this.bleeding = false;
+    this.reflecting = false;
   }
 
-  view.prototype.init = function(physics) {
+  Renderer.prototype.init = function(physics) {
     return this.initialized = true;
   };
 
-  view.prototype.reset = function() {
-    this.ctx.clearRect(0, 0, this.width, this.height);
-    this.mctx.clearRect(0, 0, this.width, this.height);
-    this.octx.clearRect(0, 0, this.width, this.height);
-    return this.initialized = false;
-  };
-
-  view.prototype.render = function(physics) {
+  Renderer.prototype.render = function(physics) {
+    var direction, p, s, time, vel, _i, _j, _len, _len1, _ref, _ref1;
     if (!this.initialized) {
-      return this.init(physics);
+      this.init(physics);
     }
-
-    var startTime = new Date().getTime(),
-        vel = new Vector(),
-        dir = new Vector(),
-        parts, springs;
-
-    if (!this.bleed) {
-      this.canvas.width = this.canvas.width;
+    time = new Date().getTime();
+    vel = new Vector();
+    direction = new Vector();
+    if (!this.bleeding) {
+      this.cnvs.width = this.cnvs.width;
     }
-
-    this.ctx.lineWidth = 1;
-
-    if (this.renderParticles) {
-      parts = physics.particles;
-      for (var i = 0, _len = parts.length; i < _len; i++) {
-        var p = parts[i];
-
-        this.ctx.fillStyle = p.colour || '#FFFFFF';
-        this.ctx.beginPath();
-
-        if (p.shape === 'pentagon') {
-          this.ctx.moveTo(p.pos.x, p.pos.y - p.radius);
-          this.ctx.lineTo(p.pos.x - p.radius, p.pos.y);
-          this.ctx.lineTo(p.pos.x + -p.radius * 0.5, p.pos.y + p.radius * (Math.sqrt(3) / 2));
-          this.ctx.lineTo(p.pos.x + p.radius * 0.5, p.pos.y + p.radius * (Math.sqrt(3) / 2));
-          this.ctx.lineTo(p.pos.x + p.radius, p.pos.y);
-          this.ctx.lineTo(p.pos.x, p.pos.y - p.radius);
-        } else if (p.shape === 'square') {
-          this.ctx.fillRect(p.pos.x - p.radius, p.pos.y - p.radius, p.radius * 2, p.radius * 2);
-        } else if (p.shape === 'special') {
-          this.ctx.moveTo(p.pos.x - p.radius, p.pos.y);
-          this.ctx.lineTo(p.pos.x - p.radius, p.pos.y - p.radius * 1.5);
-          this.ctx.lineTo(p.pos.x, p.pos.y);
-          this.ctx.arc(p.pos.x, p.pos.y, p.radius, 0, TWO_PI, false);
-          
-          this.ctx.moveTo(p.pos.x + p.radius, p.pos.y);
-          this.ctx.lineTo(p.pos.x + p.radius, p.pos.y - p.radius * 1.5);
-          this.ctx.lineTo(p.pos.x, p.pos.y);
-          this.ctx.arc(p.pos.x, p.pos.y, p.radius, 0, TWO_PI, false);
-        } else if (p.shape === 'triangle') {
-          var side = ~~(p.radius * (6 / Math.sqrt(3)));
-          this.ctx.moveTo(p.pos.x, p.pos.y - p.radius);
-          this.ctx.lineTo(p.pos.x - side/5, p.pos.y + side / 5);
-          this.ctx.lineTo(p.pos.x + side/5, p.pos.y + side / 5);
-        } else { // circle
-          this.ctx.arc(p.pos.x, p.pos.y, p.radius, 0, TWO_PI, false);
-        }
-
-        this.ctx.closePath();
-        this.ctx.fill();
+    _ref = physics.particles;
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      p = _ref[_i];
+      this.ctx.fillStyle = p.colour || '#FFFFFF';
+      if (p.shape === 'pentagon') {
+        this.drawPentagon(p);
+      } else if (p.shape === 'square') {
+        this.drawSquare(p);
+      } else if (p.shape === 'special') {
+        this.drawCat(p);
+      } else if (p.shape === 'triangle') {
+        this.drawTriangle(p);
+      } else {
+        this.drawCircle(p);
       }
     }
-
-    if (this.renderSprings) {
-      this.ctx.strokeStyle = 'rgba(249, 249, 222, 0.1)';
-      this.ctx.beginPath();
-
-      sprs = physics.springs;
-      for (var i = 0, _len = sprs.length; i < _len; i++) {
-        var s = sprs[i];
-        this.ctx.moveTo(s.p1.pos.x, s.p1.pos.y);
-        this.ctx.lineTo(s.p2.pos.x, s.p2.pos.y);
-      }
-      this.ctx.stroke();
+    this.ctx.strokeStyle = 'rgba(249, 249, 222, 0.1)';
+    this.ctx.beginPath();
+    _ref1 = physics.springs;
+    for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+      s = _ref1[_j];
+      this.ctx.moveTo(s.p1.pos.x, s.p1.pos.y);
+      this.ctx.lineTo(s.p2.pos.x, s.p2.pos.y);
     }
-
-    if (this.renderMouse) {
-      this.ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
-      this.ctx.beginPath();
-      this.ctx.arc(this.mouse.pos.x, this.mouse.pos.y, 20, 0, TWO_PI);
-      this.ctx.fill();
-    }
-
-    if (this.reflect) {
+    this.ctx.stroke();
+    this.ctx.fillStyle = 'rgba(255,255,255,0.2)';
+    this.ctx.beginPath();
+    this.ctx.arc(this.mouse.pos.x, this.mouse.pos.y, 20, 0, this.TWO_PI);
+    this.ctx.fill();
+    if (this.reflecting) {
       this.octx.clearRect(0, 0, this.width, this.height);
       this.mctx.fillStyle = '#f9f9de';
-
       this.octx.save();
       this.octx.beginPath();
       this.octx.moveTo(0, 0);
-      this.octx.lineTo(this.xo, this.yo);
-      this.octx.lineTo(0, this.yo);
+      this.octx.lineTo(this.centerX, this.centerY);
+      this.octx.lineTo(0, this.centerY);
       this.octx.lineTo(0, 0);
       this.octx.closePath();
       this.octx.clip();
-      this.octx.drawImage(this.canvas, 0, 0);
+      this.octx.drawImage(this.cnvs, 0, 0);
       this.octx.restore();
-
       this.octx.save();
       this.octx.globalCompositeOperation = 'destination-over';
-      this.octx.translate(this.xo, this.yo);
+      this.octx.translate(this.centerX, this.centerY);
       this.octx.scale(-1, 1);
-      this.octx.rotate((180 * PI_RAD) - (Math.atan(this.yo/this.xo) * 2));
-      this.octx.drawImage(this.offscreen, -this.xo, -this.yo);
+      this.octx.rotate((180 * this.TO_RADIAN) - Math.atan(this.centerY / this.centerX) * 2);
+      this.octx.drawImage(this.offscrn, -this.centerX, -this.centerY);
       this.octx.scale(-1, 1);
-      this.octx.drawImage(this.offscreen, this.xo, -this.yo);
+      this.octx.drawImage(this.offscrn, this.centerX, -this.centerY);
       this.octx.restore();
-
       if (this.landscape === 90) {
         this.octx.save();
         this.octx.globalCompositeOperation = 'destination-over';
-        this.octx.translate(this.xo, this.yo);
+        this.octx.translate(this.centerX, this.centerY);
         this.octx.scale(-1, 1);
-        this.octx.rotate((135 * PI_RAD) - (Math.atan(this.yo/this.xo)) * 2.4);
-        this.octx.drawImage(this.offscreen, -this.xo, -this.yo);
+        this.octx.rotate((135 * this.TO_RADIAN) - Math.atan(this.centerY / this.centerX) * 2.4);
+        this.octx.drawImage(this.offscrn, -this.centerX, -this.centerY);
         this.octx.scale(-1, 1);
-        this.octx.drawImage(this.offscreen, this.xo, -this.yo);
-        this.octx.restore();    
-      }  
-
-      this.octx.clearRect(this.xo, 0, this.xo, this.height);
-      this.octx.clearRect(0, this.yo, this.width, this.yo);
-
+        this.octx.drawImage(this.offscrn, this.centerX, -this.centerY);
+        this.octx.restore();
+      }
+      this.octx.clearRect(this.centerX, 0, this.centerX, this.height);
+      this.octx.clearRect(0, this.centerY, this.width, this.centerY);
       this.octx.save();
-      this.octx.translate(this.xo, this.yo);
+      this.octx.translate(this.centerX, this.centerY);
       this.octx.scale(-1, -1);
-      this.octx.drawImage(this.offscreen, -this.xo, -this.yo);
+      this.octx.drawImage(this.offscrn, -this.centerX, -this.centerY);
       this.octx.scale(-1, 1);
-      this.octx.drawImage(this.offscreen, -this.xo, -this.yo);
+      this.octx.drawImage(this.offscrn, -this.centerX, -this.centerY);
       this.octx.restore();
-
       this.mctx.fillRect(0, 0, this.width, this.height);
-      this.mctx.drawImage(this.offscreen, 0, 0);
+      this.mctx.drawImage(this.offscrn, 0, 0);
     }
-
-    return this.renderTime = new Date().getTime() - startTime;
+    return this.renderTime = new Date().getTime() - time;
   };
 
-  view.prototype.setSize = function(width, height, landscape) {
-    this.landscape = landscape ||
-                     Math.abs(window.orientation) ||
-                     (width > height) ? 90 : 0;
+  Renderer.prototype.drawCat = function(p) {
+    this.ctx.beginPath();
+    this.ctx.moveTo(p.pos.x - p.radius, p.pos.y);
+    this.ctx.lineTo(p.pos.x - p.radius, p.pos.y - p.radius * 1.5);
+    this.ctx.lineTo(p.pos.x, p.pos.y);
+    this.ctx.arc(p.pos.x, p.pos.y, p.radius, 0, this.TWO_PI, false);
+    this.ctx.moveTo(p.pos.x + p.radius, p.pos.y);
+    this.ctx.lineTo(p.pos.x + p.radius, p.pos.y - p.radius * 1.5);
+    this.ctx.lineTo(p.pos.x, p.pos.y);
+    this.ctx.arc(p.pos.x, p.pos.y, p.radius, 0, this.TWO_PI, false);
+    this.ctx.closePath();
+    return this.ctx.fill();
+  };
 
+  Renderer.prototype.drawCircle = function(p) {
+    this.ctx.beginPath();
+    this.ctx.arc(p.pos.x, p.pos.y, p.radius, 0, this.TWO_PI, false);
+    this.ctx.closePath();
+    return this.ctx.fill();
+  };
+
+  Renderer.prototype.drawPentagon = function(p) {
+    this.ctx.beginPath();
+    this.ctx.moveTo(p.pos.x, p.pos.y - p.radius);
+    this.ctx.lineTo(p.pos.x - p.radius, p.pos.y);
+    this.ctx.lineTo(p.pos.x + -p.radius * 0.5, p.pos.y + p.radius * (Math.sqrt(3) / 2));
+    this.ctx.lineTo(p.pos.x + p.radius * 0.5, p.pos.y + p.radius * (Math.sqrt(3) / 2));
+    this.ctx.lineTo(p.pos.x + p.radius, p.pos.y);
+    this.ctx.lineTo(p.pos.x, p.pos.y - p.radius);
+    this.ctx.closePath();
+    return this.ctx.fill();
+  };
+
+  Renderer.prototype.drawSquare = function(p) {
+    this.ctx.beginPath();
+    this.ctx.fillRect(p.pos.x - p.radius, p.pos.y - p.radius, p.radius * 2, p.radius * 2);
+    this.ctx.closePath();
+    return this.ctx.fill();
+  };
+
+  Renderer.prototype.drawTriangle = function(p) {
+    var side;
+    side = ~~(p.radius * (6 / Math.sqrt(3)));
+    this.ctx.beginPath();
+    this.ctx.moveTo(p.pos.x, p.pos.y - p.radius);
+    this.ctx.lineTo(p.pos.x - side / 5, p.pos.y + side / 5);
+    this.ctx.lineTo(p.pos.x + side / 5, p.pos.y + side / 5);
+    this.ctx.closePath();
+    return this.ctx.fill();
+  };
+
+  Renderer.prototype.reset = function() {
+    this.cnvs.width = this.cnvs.width;
+    this.mirror.width = this.mirror.width;
+    this.offscrn.width = this.offscrn.width;
+    return this.initialized = false;
+  };
+
+  Renderer.prototype.setSize = function(width, height, orientation) {
+    var _ref;
+    this.landscape = (_ref = orientation || Math.abs(window.orientation) || (width > height)) != null ? _ref : {
+      90: 0
+    };
     this.width = width;
     this.height = height;
-    this.xo = this.width / 2;
-    this.yo = this.height / 2;
-    this.canvas.width = this.width;
-    this.canvas.height = this.height;
-    this.mirrors.width = this.width;
-    this.mirrors.height = this.height;
-    this.offscreen.width = this.width;
-    return this.offscreen.height = this.height;
+    this.centerX = this.width / 2;
+    this.centerY = this.height / 2;
+    this.cnvs.width = this.width;
+    this.cnvs.height = this.height;
+    this.mirror.width = this.width;
+    this.mirror.height = this.height;
+    this.offscrn.width = this.width;
+    return this.offscrn.height = this.height;
   };
 
-  return view;
+  return Renderer;
+
 })();
-
-// ========= END KALEID RENDERER =========
-

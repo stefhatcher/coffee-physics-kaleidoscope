@@ -1,46 +1,46 @@
-(function() {
-  var vendors = ['ms', 'moz', 'webkit', 'o'];
-  for(var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
-    window.requestAnimationFrame = window[vendors[x]+'RequestAnimationFrame'];
-    window.cancelAnimationFrame =
-      window[vendors[x]+'CancelAnimationFrame'] || window[vendors[x]+'CancelRequestAnimationFrame'];
-  }
-
-  if (!window.requestAnimationFrame)
-    window.requestAnimationFrame = function(callback, element) {
-        var currTime = new Date().getTime();
-        var timeToCall = Math.max(0, 16 - (currTime - lastTime));
-        var id = window.setTimeout(function() { callback(currTime + timeToCall); }, timeToCall);
-        lastTime = currTime + timeToCall;
-        return id;
-    };
-
-  if (!window.cancelAnimationFrame)
-    window.cancelAnimationFrame = function(id) {
-        clearTimeout(id);
-    };
-}());
-
-// ========= END REQUEST ANIMATION FRAME =========
-
-var controls,
+var Controls, k_interface, k_world,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
-controls = (function() {
-  function controls(kaleid) {
+Controls = (function() {
+
+  function Controls() {
+    this.update = __bind(this.update, this);
+
+    this.toggleThemes = __bind(this.toggleThemes, this);
+
+    this.togglePixelate = __bind(this.togglePixelate, this);
+
+    this.togglePause = __bind(this.togglePause, this);
+
+    this.toggleMirrors = __bind(this.toggleMirrors, this);
+
+    this.toggleMenu = __bind(this.toggleMenu, this);
+
+    this.toggleEdit = __bind(this.toggleEdit, this);
+
+    this.toggleBleed = __bind(this.toggleBleed, this);
+
+    this.step = __bind(this.step, this);
+
+    this.selectTheme = __bind(this.selectTheme, this);
+
+    this.resetAll = __bind(this.resetAll, this);
+
+    this.exportAll = __bind(this.exportAll, this);
+
+    this.addShape = __bind(this.addShape, this);
     this.playing = false;
   }
 
-  controls.prototype.init = function(kaleid) {
-    this.world = kaleid;
-    this.update = __bind(this.update, this);
+  Controls.prototype.init = function(world) {
+    var action, item;
+    this.world = world;
     this.playing = true;
-    this.update();
-    this.items = {};
-    this.themes = $('#color-themes').hide();
     this.pixelate = false;
     this.pixelImgId = 'pixel-img';
-
+    this.update();
+    this.themes = $('#color-themes').hide();
+    this.items = {};
     this.actions = {
       'kaleidoscope': this.toggleMirrors,
       'pixelate': this.togglePixelate,
@@ -50,264 +50,278 @@ controls = (function() {
       'hide': this.toggleMenu,
       'animate': this.togglePause,
       'reset': this.resetAll,
-      'screenshot a': this.export
+      'screenshot a': this.exportAll
     };
-
-    var item, startEvent = (Modernizr && Modernizr.touch) ? 'touchmove touchend' : 'mousedown';
-    for (var action in this.actions) {
+    if (Modernizr.touch) {
+      this.startEvent = 'touchmove touchend';
+    } else {
+      this.startEvent = 'mousedown';
+    }
+    for (action in this.actions) {
       item = $('#' + action);
-      item.bind(startEvent, __bind(this.actions[action], this));
+      item.bind(this.startEvent, this.actions[action]);
       item.data('action', action);
       this.items[action] = item;
     }
-
     this.setupColors();
     this.toggleEdit();
-
-    $('li.shape').bind(startEvent, __bind(this.addShape, this));
-    $(this.world.container).bind(startEvent, __bind(this.step, this));
-
+    $('li.shape').bind(this.startEvent, this.addShape);
+    $(this.world.container).bind(this.startEvent, this.step);
     if (!Modernizr.localstorage) {
-      this.items['screenshot a'].remove();
+      return this.items['screenshot a'].remove();
     }
-  }
+  };
 
-  controls.prototype.export = function(e) {
+  Controls.prototype.addShape = function(e) {
+    if (e != null) {
+      e.stopPropagation();
+    }
+    return this.world.addShape($(e.target).parent().attr('id'));
+  };
+
+  Controls.prototype.exportAll = function(e) {
+    var data;
     e.stopPropagation();
     e.preventDefault();
-
-    var data;
-
     if (this.pixelate) {
-      data = document.getElementById(this.pixelImgId).toDataURL('png/image');
-    } else if (this.world.view.reflect) {
-      data = this.world.view.mirrors.toDataURL('png/image');
+      data = $('#' + this.pixelImgId)[0].toDataURL('jpg/image');
+    } else if (this.world.renderer.reflecting) {
+      data = this.world.renderer.mirror.toDataURL('jpg/image');
     } else {
-      data = this.world.view.canvas.toDataURL('png/image');
+      data = this.world.renderer.cnvs.toDataURL('jpg/image');
     }
-
-    localStorage.setItem('kaleidoscope_screenshot', data);
-
-    return true;
+    return localStorage.setItem('kaleidoscope_screenshot', data);
   };
 
-  controls.prototype.resetAll = function(e) {
-    e && e.stopPropagation();
-
-    if (confirm("Clear all of the things?")) {
-      this.pixelate = false;
-      this.items['pixelate'].removeClass('active');
-
-      this.pause();
-      this.items['edit'].addClass('open');
-
-      this.world.physics.destroy();
-      this.world.physics = null;
-      this.world.view.reset();
-
-      this.world.setup();
-
-      localStorage.setItem('kaleidoscope_screenshot', '');
-
-      $('#' + this.pixelImgId).remove();
-      $(this.world.view.canvas).show();
-      $(this.world.view.mirrors).show();
-    }
-  };
-
-  controls.prototype.togglePause = function(e) {
-    return (!this.playing) ? this.play() : this.pause();
-  };
-
-  controls.prototype.pause = function(e) {
+  Controls.prototype.pause = function(e) {
     this.items['animate'].removeClass('playing').addClass('paused');
-    this.playing = false;
+    return this.playing = false;
   };
 
-  controls.prototype.play = function() {
+  Controls.prototype.play = function() {
     this.items['animate'].removeClass('paused').addClass('playing');
     this.items['edit'].removeClass('open');
-    this.items['reset'].hide();
+    this.items['reset'].hide;
     this.playing = true;
-
-    this.pixelate && this.togglePixelate();
-  };
-
-  controls.prototype.step = function(e) {
-    if (!this.playing) {
-      this.world.step();
-      this.world.view.render(this.world.physics);
+    if (this.pixelate) {
+      return this.togglePixelate();
     }
   };
 
-  controls.prototype.update = function(time) {
-    requestAnimationFrame(this.update);
-
-    if (this.playing && this.world) {
-      this.world.step();
-      this.removeSpring(time);
-    }
-  };
-
-  controls.prototype.removeSpring = function(time) {
+  Controls.prototype.removeSpring = function(time) {
+    var index, removed;
     if (time % 500 === 0) {
-      var index = ~~Random(1, this.world.physics.springs.length - 1),
+      index = ~~Random(1, this.world.physics.springs.length - 1);
       removed = this.world.physics.springs[index];
-
-      if (removed) {
+      if (removed != null) {
         removed.p2.behaviours.push(new Attraction(removed.p1.pos, 500, -2000));
-        this.world.physics.springs.splice(index, 1);
+        return this.world.physics.springs.splice(index, 1);
       }
     }
   };
 
-  // shape controls
-  controls.prototype.addShape = function(e) {
-    e && e.stopPropagation();
-    this.world.addShape($(e.target).parent().attr('id'));
+  Controls.prototype.resetAll = function(e) {
+    if (e != null) {
+      e.stopPropagation();
+      e.preventDefault();
+    }
+    if (confirm('Clear all of the things? You sure?')) {
+      this.pixelate = false;
+      this.items['pixelate'].removeClass('active');
+      this.pause();
+      this.items['edit'].addClass('open');
+      this.world.physics.destroy();
+      this.world.physics = null;
+      this.world.renderer.reset();
+      this.world.setup();
+      localStorage.setItem('kaleidoscope_screenshot', '');
+      $('#' + this.pixelImgId).remove();
+      $(this.world.renderer.cnvs).show();
+      return $(this.world.renderer.mirror).show();
+    }
   };
 
-  // color controls
-  controls.prototype.setupColors = function() {
-    var startEvent = (Modernizr && Modernizr.touch) ? 'touchend' : 'mouseup',
-        size = this.world.THEMES.length,
-        themeh = this.world.width/(size * 4), theme, li;
+  Controls.prototype.selectTheme = function(e) {
+    if (e != null) {
+      e.stopPropagation();
+    }
+    this.world.setTheme($(e.target).parent().attr('id'));
+    return this.toggleThemes();
+  };
 
-    for (var i = 0, _len = this.world.THEMES.length; i < _len; i++) {
-      theme = this.world.THEMES[i];
+  Controls.prototype.setupColors = function() {
+    var color, i, li, size, theme, themeh, _i, _j, _len, _len1, _ref, _results;
+    size = this.world.THEMES.length;
+    themeh = this.world.width / (size * 4);
+    _ref = this.world.THEMES;
+    _results = [];
+    for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
+      theme = _ref[i];
       li = $('<li>').attr('id', i + '_theme');
       li.append($('<h2>').text(i));
-
-      for (var j = 0, _jlen = theme.length; j < _jlen; j++) {
-        li.append($('<span style="background-color:' + theme[j] + '; height:' + themeh + 'px">'));
+      for (_j = 0, _len1 = theme.length; _j < _len1; _j++) {
+        color = theme[_j];
+        li.append($('<span style="background-color:' + color + '; height:' + themeh + 'px">'));
       }
-
       this.themes.append(li);
-      li.bind(startEvent, __bind(this.selectTheme, this));
+      _results.push(li.bind(this.startEvent, this.selectTheme));
+    }
+    return _results;
+  };
+
+  Controls.prototype.step = function(e) {
+    if (!this.playing) {
+      this.world.step();
+      return this.world.renderer.render(this.world.physics);
     }
   };
 
-  controls.prototype.selectTheme = function(e) {
-    e && e.stopPropagation();
-
-    this.world.setTheme(($(e.target).parent().attr('id')));
-    this.toggleThemes();
-  };
-
-  // state controls
-  controls.prototype.toggleBleed = function(e) {
-    e && e.stopPropagation();
-    
-    this.world.view.bleed = !this.world.view.bleed;
+  Controls.prototype.toggleBleed = function(e) {
+    if (e != null) {
+      e.stopPropagation();
+    }
+    this.world.renderer.bleeding = !this.world.renderer.bleeding;
     this.items['bleed'].toggleClass('active');
-    !this.playing && this.world.view.render(this.world.physics);
+    if (!this.playing) {
+      return this.world.renderer.render(this.world.physics);
+    }
   };
 
-  controls.prototype.toggleEdit = function(e) {
-    e && e.stopPropagation();
-
+  Controls.prototype.toggleEdit = function(e) {
+    if (e != null) {
+      e.stopPropagation();
+    }
     this.items['edit'].toggleClass('open');
-
     if (this.items['edit'].hasClass('open')) {
       this.pause();
-      this.items['reset'].show();
+      return this.items['reset'].show();
     } else {
       this.play();
       this.items['colors'].removeClass('active');
       this.themes.hide();
-      this.items['reset'].hide();
+      return this.items['reset'].hide();
     }
   };
 
-  controls.prototype.toggleMenu = function(e) {
-    e && e.preventDefault();
-    e && e.stopPropagation();
-
-    this.items['hide'].toggleClass('flip')
-                      .siblings().toggle()
-                      .parent().toggleClass('collapsed');
-
+  Controls.prototype.toggleMenu = function(e) {
+    if (e != null) {
+      e.stopPropagation();
+    }
+    this.items['hide'].toggleClass('flip').siblings().toggle().parent().toggleClass('collapsed');
     this.items['animate'].toggleClass('minimized');
-
     if (this.items['hide'].hasClass('flip')) {
-      this.items['reset'].hide();
+      return this.items['reset'].hide();
     } else if (this.items['edit'].hasClass('open')) {
-      this.items['reset'].show();
+      return this.items['reset'].show();
     }
   };
 
-  controls.prototype.toggleMirrors = function(e) {
-    e && e.stopPropagation();
-
+  Controls.prototype.toggleMirrors = function(e) {
+    if (e != null) {
+      e.stopPropagation();
+    }
     this.items['kaleidoscope'].toggleClass('active');
-    this.world.view.reflect = !this.world.view.reflect;
-
+    this.world.renderer.reflecting = !this.world.renderer.reflecting;
     if (!this.pixelate) {
-      if (!this.world.view.reflect) {
-        $(this.world.view.canvas).show();
-        $(this.world.view.mirrors).hide();
-        this.world.view.mctx.clearRect(0, 0, this.world.width, this.world.height);
+      if (!this.world.renderer.reflecting) {
+        $(this.world.renderer.cnvs).show();
+        $(this.world.renderer.mirror).hide();
+        return this.world.renderer.mctx.clearRect(0, 0, this.world.width, this.world.height);
       } else {
-        $(this.world.view.canvas).hide();
-        $(this.world.view.mirrors).show();
-        !this.playing && this.world.view.render(this.world.physics);
+        $(this.world.renderer.cnvs).hide();
+        $(this.world.renderer.mirror).show();
+        if (!this.playing) {
+          return this.world.renderer.render(this.world.physics);
+        }
       }
     }
   };
 
-  controls.prototype.togglePixelate = function(e) {
-    e && e.stopPropagation();
+  Controls.prototype.togglePause = function(e) {
+    if (!this.playing) {
+      return this.play();
+    } else {
+      return this.pause();
+    }
+  };
 
+  Controls.prototype.togglePixelate = function(e) {
+    if (e != null) {
+      e.stopPropagation();
+    }
     this.items['pixelate'].toggleClass('active');
     this.pixelate = !this.pixelate;
-
     if (this.pixelate) {
-      // pixelate the currently visible world
-      if (this.world.view.reflect) {
-        data = this.world.view.mirrors.toDataURL('png/image');
-      } else {
-        data = this.world.view.canvas.toDataURL('png/image');
-      }
-      
-      var obj = this,
-          img = document.createElement('img');
-          img.src = data;
-          img.id = this.pixelImgId;
-          img.style.opacity = 0;
-
-      img.addEventListener('load', function(){
-        img.closePixelate([
-          { shape: 'square', resolution: 18, size: 20, offset: 0, alpha: 0.271 },
-          { shape: 'diamond', resolution: 18, size: 38, offset: 0, alpha: 0.651 }
-        ]);
-
-        $('#' + obj.pixelImgId).css('opacity', 1);
-        $(obj.world.view.canvas).fadeOut(0);
-        $(obj.world.view.mirrors).fadeOut(0);
-        
-      }, false);
-    
-      this.world.container.appendChild(img);
+      return this.updatePixelate();
     } else {
-      $(this.world.view.canvas).fadeIn(0);
-      $(this.world.view.mirrors).fadeIn(0);
-      $('#' + this.pixelImgId).remove();
+      $(this.world.renderer.cnvs).fadeIn(0);
+      $(this.world.renderer.mirror).fadeIn(0);
+      return $('#' + this.pixelImgId).remove();
     }
   };
 
-  controls.prototype.toggleThemes = function(e) {
-    e && e.stopPropagation();
-
+  Controls.prototype.toggleThemes = function(e) {
+    if (e != null) {
+      e.stopPropagation();
+    }
     this.items['colors'].toggleClass('active');
-    this.themes.slideToggle('fast');
+    return this.themes.slideToggle('fast');
   };
 
-  return controls;
+  Controls.prototype.update = function(time) {
+    requestAnimationFrame(this.update);
+    if (this.playing && this.world) {
+      this.world.step();
+      return this.removeSpring(time);
+    }
+  };
+
+  Controls.prototype.updatePixelate = function() {
+    var data, img,
+      _this = this;
+    console.log('pixelate');
+    if (this.world.renderer.reflecting) {
+      data = this.world.renderer.mirror.toDataURL('png/image');
+    } else {
+      data = this.world.renderer.cnvs.toDataURL('png/image');
+    }
+    img = document.createElement('img');
+    img.src = data;
+    img.id = this.pixelImgId;
+    img.style.opacity = 0;
+    img.addEventListener('load', function() {
+      img.closePixelate([
+        {
+          shape: 'square',
+          resolution: 18,
+          size: 20,
+          offset: 0,
+          alpha: 0.271
+        }, {
+          shape: 'diamond',
+          resolution: 18,
+          size: 38,
+          offset: 0,
+          alpha: 0.651
+        }
+      ]);
+      $('#' + _this.pixelImgId).css('opacity', 1);
+      $(_this.world.renderer.cnvs).fadeOut(0);
+      return $(_this.world.renderer.mirror).fadeOut(0);
+    }, false);
+    return this.world.container.appendChild(img);
+  };
+
+  return Controls;
 
 })();
 
-var kaleidoscope = new kaleid();
-    kaleidoscope.init(document.getElementById('viewport'), new view());
-var controllers = new controls();
-    controllers.init(kaleidoscope);
-    controllers.world.addShape('circle');
+k_world = new World();
+
+k_world.init(document.getElementById('viewport'), new Renderer());
+
+k_interface = new Controls();
+
+k_interface.init(k_world);
+
+k_interface.world.addShape('circle');

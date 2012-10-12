@@ -1,21 +1,26 @@
-(function(){
-  var bodyEl = $('body'),
-      nav = $('#nav'),
-      startTop = $('#start').length && $('#start').offset().top - 10;
 
-  $('html, body').animate({ scrollTop: bodyEl.offset().top }, 190);
-
-  nav.delegate('li', 'touchend click', function(e){
+(function() {
+  var bodyEl, nav, startTop;
+  bodyEl = $('body');
+  nav = $('#nav');
+  startTop = $('#start');
+  if (startTop != null) {
+    startTop = startTop.offset().top - 10;
+  }
+  $('html, body').animate({
+    scrollTop: bodyEl.offset().top
+  }, 190);
+  return nav.delegate('li', 'touchend mouseup', function(e) {
+    var active, id, obj;
     e.preventDefault();
     e.stopPropagation();
-
-    var obj = $(this),
-        id = this.id,
-        active = nav.find('.active').removeClass('active');
-
+    obj = $(this);
+    id = this.id;
+    active = nav.find('active').removeClass('active');
     bodyEl.removeClass(active.attr('id')).addClass(id);
     obj.addClass('active');
-    $('html, body').animate({ scrollTop: startTop }, 190);
+    return $('html, body').animate({
+      scrollTop: startTop
+    }, 190);
   });
 })();
-
