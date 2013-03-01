@@ -1,0 +1,157 @@
+@import "compass";
+@import "compass/css3/user-interface";
+
+$legacy-support-for-ie6:             false;
+$legacy-support-for-ie7:             true;
+$legacy-support-for-ie8:             true;
+$experimental-support-for-webkit:    true;
+$experimental-support-for-microsoft: true;
+$experimental-support-for-mozilla:   true;
+$experimental-support-for-opera:     true;
+$experimental-support-for-khtml:     false;
+$experimental-support-for-svg: true;
+
+$break-big: 768px;
+$break-bigger: 900px;
+$break-small: 586px;
+
+$icon_width: 80px;
+
+@import "icons/*.png";
+
+* { @include box-sizing(border-box) }
+
+a, a:hover, a:visited, a:focus {
+  color: #fff;
+  text-decoration: none }
+
+html {
+  overflow: auto }
+
+html,body {
+  min-height: 100%;
+  height: auto;
+  width: 100%;
+  margin:0;
+  padding:0;
+  position: relative }
+
+body {
+  color: #000;
+  font-family: Helvetica, Arial, Sans-Serif;
+  font-size: 100%;
+  -webkit-font-smoothing: antialiased;
+  -webkit-text-size-adjust: none;
+  -moz-text-size-adjust: none;
+  -ms-text-size-adjust: none;
+  -o-text-size-adjust: none;
+  text-size-adjust: none; }
+
+%icon-shrink {
+  @include transform(scale(0.5));
+  @include transform-origin(bottom left, false);
+
+  @media only screen and (min-width : 321px) and (orientation : landscape) {
+    @include transform(scale(0.4));
+  };
+}
+
+body.kaleidoscope {
+  background: rgba(#f9f9de, 0.75);
+  overflow: hidden }
+
+#reset {
+  cursor: pointer;
+  display: block;
+  position: absolute; top: 5px; right: 5px;
+  width: $icon_width;
+  height: $icon_width;
+  @include hide-text();
+  @include icons-sprite(trash-dark);
+  z-index: 10000;
+  @include transform(scale(0.5));
+  @include transform-origin(top right, false); 
+
+  @media only screen and (min-width : 321px) and (orientation : landscape) {
+    @include transform(scale(0.4));
+  }
+}
+
+#paused-opts {
+  @extend %icon-shrink;
+  @include horizontal-list(0);
+  position: absolute; bottom: 195px; left: 50px;
+  text-align: center;
+  z-index: 10000;
+
+  #animate.playing + & { display: none }
+  #animate.paused + & { display: block }
+  #animate.minimized + & { display: none !important }
+
+  @media only screen and (min-width : 321px) and (orientation : landscape) {
+    bottom: 155px;
+    left: 40px;
+  }
+
+  li {
+    @include border-radius(10px);
+    height: $icon_width;
+    line-height: $icon_width;
+    overflow: hidden;
+    width: $icon_width;
+
+    &:focus { outline: none }
+
+    .icon {
+      background-color: #000 !important;
+      cursor: pointer;
+      display: block;
+      @include hide-text();
+      width: $icon_width; }
+
+    &.active .icon {
+      background-color: #fff !important }
+
+    &#pixelate {
+      .icon { @include icons-sprite(pixelate-dark) }
+      &.active .icon { @include icons-sprite(pixelate-light) }
+    }
+
+    &#screenshot {
+      margin-left: 10px;
+      .icon { @include icons-sprite(camera) }
+    }
+  }
+}
+
+#viewport {
+  display: block;
+  position: relative;
+  width: 100%;
+  height: auto;
+
+  canvas, img {
+    position: absolute;
+    min-height: 100%;
+    top: 0;
+    z-index: 10;
+    @include transform(translate3d(0, 0, 0)); }
+
+  #pixel-img { opacity: 0 }
+  img { z-index: -1 }
+}
+
+noscript {
+  display: block;
+  font-size: 500%;
+  padding: 10%;
+  text-align: center;
+  width: 100%;
+
+  a, a:hover, a:visited, a:focus {
+    color: #666;
+    display: block }
+}
+
+@import "home";
+@import "experiment-ui";

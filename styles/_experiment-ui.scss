@@ -1,0 +1,267 @@
+//  animate play/pause ui
+#animate {
+  @include icons-sprite(play-dark);
+  @include border-radius(5px);
+  @extend %icon-shrink;
+  display: block;
+  position: absolute; bottom: 195px; left: 5px;
+  background-color: #000;
+  z-index: 100000;
+  text-align: center;
+  line-height: 45px;
+  height: 80px;
+  width: 80px;
+
+  &.playing {
+    @include icons-sprite(pause-dark);
+    background-color: #000;
+  }
+
+  &.minimized {
+    @include opacity(0.1);
+    bottom: 75px;
+    left: -5px; }
+
+  @media only screen and (min-width : 321px) and (orientation : landscape) {
+    bottom: 155px;
+
+    &.minimized { bottom: 65px }
+  }
+}
+
+// color themes dropdown drawer
+#color-themes {
+  background: #fff;
+  @include horizontal-list(0);
+  position: absolute;
+  top: 0;
+  z-index: 100000;
+  left: 0;
+  right: 0;
+
+  li {
+    width: 20%;
+
+    h2 {
+      background: #000;
+      color: #fff;
+      font-weight: 400;
+      margin: 0;
+      padding: 0.25em 0;
+      text-align: center }
+
+    span {
+      display: inline-block;
+      float: left;
+      height: 2.75em;
+      width: 25% }
+  }
+}
+
+// all of the other mode ui elements
+#modes {
+  @extend %icon-shrink;
+  @include user-select(none);
+  display: block;
+  font-size: 2em;
+  font-weight: 700;
+  @include no-bullets();
+  margin: 0;
+  @include opacity(1);
+  padding: 0;
+  position: absolute;
+  left: 5px; bottom: 5px;
+  text-align: center;
+  z-index: 10000;
+
+  &.collapsed {
+    left: -5px;
+    bottom: 30px; }
+
+  li {
+    height: $icon_width;
+    line-height: $icon_width;
+    overflow: hidden;
+    width: $icon_width;
+
+    &:focus { outline: none }
+
+    &.open { width: 400% }
+    &:first-child { @include border-radius(10px 10px 0 0) }
+    &:last-child { @include border-radius(0 0 10px 10px) }
+
+    > .icon { border-top: 1px solid #fff }
+    > .icon:first-child { border-top: none }
+
+    .icon {
+      background-color: #000 !important;
+      cursor: pointer;
+      display: block;
+      @include hide-text();
+      width: $icon_width;
+
+      &.top {
+        display: inline-block;
+        float: left }
+    }
+
+    &.active .icon { background-color: #fff !important }
+
+    &#kaleidoscope {
+      .icon { @include icons-sprite(mirrors-dark) }
+      &.active .icon { @include icons-sprite(mirrors-light) }
+    }
+
+    &#bleed {
+      .icon { @include icons-sprite(bleed-dark) }
+      &.active .icon { @include icons-sprite(bleed-light) }
+    }
+
+    &#colors {
+      .icon { @include icons-sprite(themes-dark) }
+      &.active .icon { @include icons-sprite(themes-light) }
+    }
+
+    &#edit {
+      .icon.top { @include icons-sprite(edit-dark) }
+      &.open .icon.top,
+      &.active .icon.top {
+        @include icons-sprite(edit-light);
+        background-color: #fff !important }
+
+      ul {
+        #triangle {
+          .icon { @include icons-sprite(triangle-dark) }
+        }
+
+        #square {
+          .icon { @include icons-sprite(square-dark) }
+        }
+
+        #pentagon {
+          .icon { @include icons-sprite(pentagon-dark) }
+        }
+
+        #circle {
+          .icon { @include icons-sprite(circle-dark) }
+        }
+
+        #special {
+          & .icon { @include icons-sprite(mystery-dark) }
+        }
+
+        #overlap {
+          .icon { @include icons-sprite(overlap-dark) }
+          &.active  .icon { @include icons-sprite(overlap-light) }
+        }
+      }
+    }
+
+    &#hide {
+      &.flip {
+        @include opacity(0.1);
+        @include transform(scale(-1, 1)) }
+
+      .icon { @include icons-sprite(hide-dark) }
+    }
+
+    &#intro {
+      border-top: 1px solid rgb(83, 83, 83);
+      height: 50px;
+
+      .icon {
+        @include border-radius(10px);
+        position: relative;
+        top: -35px;
+        @include icons-sprite(intro-dark)
+      }
+    }
+
+    ul {
+      @include horizontal-list(0);
+
+      li {
+        &:first-child {
+          border-left: 1px solid #fff;
+          @include border-radius(0) }
+
+        &:last-child {
+          border-right: none;
+          @include border-radius(0 5px 5px 0) }
+
+        .icon {
+          background-color: #000 !important }
+
+        &.active .icon {
+          background-color: #fff !important }
+
+        border-right: 1px solid #fff;
+        border-top-color: #000;
+        width: auto }
+    }
+  }
+}
+
+#reset {
+  cursor: pointer;
+  display: block;
+  position: absolute; top: 5px; right: 5px;
+  width: $icon_width;
+  height: $icon_width;
+  @include hide-text();
+  @include icons-sprite(trash-dark);
+  z-index: 10000;
+  @include transform(scale(0.5));
+  @include transform-origin(top right, false); 
+
+  @media only screen and (min-width : 321px) and (orientation : landscape) {
+    @include transform(scale(0.4));
+  }
+}
+
+#paused-opts {
+  @extend %icon-shrink;
+  @include horizontal-list(0);
+  position: absolute; bottom: 195px; left: 50px;
+  text-align: center;
+  z-index: 10000;
+
+  #animate.playing + & { display: none }
+  #animate.paused + & { display: block }
+  #animate.minimized + & { display: none !important }
+
+  @media only screen and (min-width : 321px) and (orientation : landscape) {
+    bottom: 155px;
+    left: 40px;
+  }
+
+  li {
+    @include border-radius(10px);
+    height: $icon_width;
+    line-height: $icon_width;
+    overflow: hidden;
+    width: $icon_width;
+
+    &:focus { outline: none }
+
+    .icon {
+      background-color: #000 !important;
+      cursor: pointer;
+      display: block;
+      @include hide-text();
+      width: $icon_width; }
+
+    &.active .icon {
+      background-color: #fff !important }
+  }
+}
+
+#pixelate {
+  .icon { @include icons-sprite(pixelate-dark) }
+  &.active .icon { @include icons-sprite(pixelate-light) }
+}
+
+#screenshot {
+  margin-left: 10px;
+  .icon { @include icons-sprite(camera) }
+}

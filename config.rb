@@ -1,4 +1,5 @@
+css_dir = "styles"
+sass_dir = "styles"
+images_dir = "images"
 output_style = :compressed
-http_images_path = '../images'
-http_generated_images_path = '../images'
-generated_images_dir = 'temp/images'
+relative_assets = true
